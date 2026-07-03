@@ -1,0 +1,55 @@
+name: Deploy Memory Game to GitHub Pages
+
+on:
+  push:
+    branches:
+      - master
+      - cursor/memory-game-react-native-b0f6
+    paths:
+      - 'memory-game/**'
+      - '.github/workflows/deploy-memory-game.yml'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-memory-game
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: memory-game/package-lock.json
+
+      - name: Install dependencies
+        working-directory: memory-game
+        run: npm ci
+
+      - name: Export web app
+        working-directory: memory-game
+        run: |
+          npx expo export --platform web --output-dir dist-web
+          node scripts/inject-pwa.js dist-web
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: memory-game/dist-web
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
