@@ -1,4 +1,4 @@
-const CACHE_NAME = 'memory-game-v1';
+const CACHE_NAME = 'memory-game-v2';
 const BASE_PATH = '/GIT-Project';
 
 self.addEventListener('install', (event) => {

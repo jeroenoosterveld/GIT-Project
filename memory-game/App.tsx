@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView, StyleSheet } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { DifficultyPicker, GameBoard } from './src/components/GameBoard';
 import { GameHeader } from './src/components/GameHeader';
@@ -24,8 +24,9 @@ export default function App() {
   } = useMemoryGame();
 
   return (
-    <LinearGradient colors={['#2f3f9f', '#5b6cff', '#8f6dff']} style={styles.gradient}>
-      <SafeAreaView style={styles.safeArea}>
+    <SafeAreaProvider>
+      <LinearGradient colors={['#2f3f9f', '#5b6cff', '#8f6dff']} style={styles.gradient}>
+        <SafeAreaView style={styles.safeArea}>
         <StatusBar style="light" />
         <ScrollView
           contentContainerStyle={styles.content}
@@ -57,8 +58,9 @@ export default function App() {
           seconds={stats.seconds}
           onPlayAgain={() => resetGame()}
         />
-      </SafeAreaView>
-    </LinearGradient>
+        </SafeAreaView>
+      </LinearGradient>
+    </SafeAreaProvider>
   );
 }
 
