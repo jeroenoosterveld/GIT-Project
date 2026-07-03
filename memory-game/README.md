@@ -1,6 +1,6 @@
 # Memory — React Native (offline)
 
-Een memory-spelletje voor iPhone (en Android) gebouwd met **Expo** en **React Native**. Alle plaatjes zitten in de app; er is geen internet nodig om te spelen.
+Een memory-spelletje voor iPhone gebouwd met **Expo** en **React Native**. Alle plaatjes zitten in de app; er is **geen internet nodig** om te spelen.
 
 ## Spel
 
@@ -10,31 +10,61 @@ Een memory-spelletje voor iPhone (en Android) gebouwd met **Expo** en **React Na
 - Animaties bij het omdraaien van kaarten
 - Werkt volledig offline
 
-## Lokaal starten
+---
+
+## Op je iPhone installeren (zonder server)
+
+`npm start` en Expo Go zijn alleen voor **ontwikkelaars** tijdens het bouwen. Als je de app gewoon op je telefoon wilt gebruiken, maak je **één keer** een echte iOS-app en installeer je die. Daarna heb je geen computer of server meer nodig.
+
+### Wat je nodig hebt
+
+- Een **Apple ID** (gratis)
+- Een **Apple Developer-account** ($99/jaar) — nodig om de app op een echte iPhone te installeren
+- Een **Expo-account** (gratis) — [expo.dev/signup](https://expo.dev/signup)
+
+### Stappen
 
 ```bash
 cd memory-game
 npm install
-npm start
+npx eas-cli@latest login
+npx eas-cli@latest build:configure
+npx eas-cli@latest build --platform ios --profile preview
 ```
 
-Scan de QR-code met de **Expo Go**-app op je iPhone, of druk op `i` in de terminal (vereist macOS + Xcode voor de simulator).
+1. Log in bij Expo (`eas login`)
+2. `build:configure` koppelt het project aan je Expo-account (eenmalig)
+3. `build` bouwt de app in de cloud (duurt ~10–20 minuten)
+4. Als de build klaar is, krijg je een **link** — open die op je iPhone om te installeren
 
-## iPhone-build (zonder Expo Go)
+De app staat daarna als icoon op je homescherm en werkt **volledig offline**, zonder server.
 
-Op een Mac met Xcode:
+### Alternatief: Mac met Xcode
+
+Heb je een Mac? Dan kun je lokaal bouwen:
 
 ```bash
 cd memory-game
+npm install
 npx expo prebuild --platform ios
-npx expo run:ios
+npx expo run:ios --configuration Release
 ```
 
-Voor publicatie in de App Store kun je [EAS Build](https://docs.expo.dev/build/introduction/) gebruiken.
+---
+
+## Ontwikkelen (optioneel)
+
+Alleen nodig als je de code wilt aanpassen:
+
+```bash
+npm start
+```
+
+---
 
 ## Eigen plaatjes
 
-Vervang de bestanden in `assets/cards/` en pas `src/constants/cards.ts` aan.
+Vervang de bestanden in `assets/cards/` en pas `src/constants/cards.ts` aan. Daarna opnieuw een build maken.
 
 ## Structuur
 
@@ -42,3 +72,4 @@ Vervang de bestanden in `assets/cards/` en pas `src/constants/cards.ts` aan.
 - `src/hooks/useMemoryGame.ts` — spel-logica
 - `src/components/` — UI-componenten
 - `assets/cards/` — lokale kaartafbeeldingen
+- `eas.json` — configuratie voor iOS-build
