@@ -26,19 +26,27 @@ const pwaTags = `
     <link rel="apple-touch-icon" href="/GIT-Project/assets/icon.png" />
 `;
 
+const cacheCleanupScript = `
+    <script>
+      (function () {
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function (regs) {
+            regs.forEach(function (reg) { reg.unregister(); });
+          });
+          navigator.serviceWorker.register('/GIT-Project/service-worker.js').catch(function () {});
+        }
+        if (window.caches) {
+          caches.keys().then(function (keys) {
+            keys.forEach(function (key) { caches.delete(key); });
+          });
+        }
+      })();
+    </script>
+`;
+
 let html = fs.readFileSync(indexPath, 'utf8');
 html = html.replace('</head>', `${pwaTags}  </head>`);
-html = html.replace(
-  '</body>',
-  `    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/GIT-Project/service-worker.js');
-        });
-      }
-    </script>
-  </body>`,
-);
+html = html.replace('</body>', `${cacheCleanupScript}  </body>`);
 
 fs.writeFileSync(indexPath, html);
 console.log(`PWA tags injected into ${indexPath}`);

@@ -5,8 +5,10 @@ import {
   Animated,
   Image,
   ImageSourcePropType,
+  Platform,
   Pressable,
   StyleSheet,
+  Text,
   View,
 } from 'react-native';
 
@@ -18,6 +20,8 @@ type MemoryCardProps = {
   disabled: boolean;
 };
 
+const isWeb = Platform.OS === 'web';
+
 export function MemoryCard({
   image,
   isFlipped,
@@ -25,16 +29,39 @@ export function MemoryCard({
   onPress,
   disabled,
 }: MemoryCardProps) {
-  const flipAnim = useRef(new Animated.Value(isFlipped || isMatched ? 1 : 0)).current;
+  const showFront = isFlipped || isMatched;
+  const flipAnim = useRef(new Animated.Value(showFront ? 1 : 0)).current;
 
   useEffect(() => {
+    if (isWeb) {
+      return;
+    }
+
     Animated.spring(flipAnim, {
-      toValue: isFlipped || isMatched ? 1 : 0,
+      toValue: showFront ? 1 : 0,
       friction: 8,
       tension: 80,
       useNativeDriver: true,
     }).start();
-  }, [flipAnim, isFlipped, isMatched]);
+  }, [flipAnim, showFront]);
+
+  if (isWeb) {
+    return (
+      <Pressable
+        onPress={onPress}
+        disabled={disabled || showFront}
+        style={({ pressed }) => [styles.pressable, pressed && styles.pressed]}
+      >
+        <View style={[styles.cardFace, styles.webCard, showFront ? styles.cardFront : styles.cardBackSolid]}>
+          {showFront ? (
+            <Image source={image} style={styles.image} resizeMode="contain" />
+          ) : (
+            <Text style={styles.webHelp}>?</Text>
+          )}
+        </View>
+      </Pressable>
+    );
+  }
 
   const frontRotation = flipAnim.interpolate({
     inputRange: [0, 1],
@@ -49,7 +76,7 @@ export function MemoryCard({
   return (
     <Pressable
       onPress={onPress}
-      disabled={disabled || isFlipped || isMatched}
+      disabled={disabled || showFront}
       style={({ pressed }) => [styles.pressable, pressed && styles.pressed]}
     >
       <View style={styles.cardContainer}>
@@ -100,10 +127,19 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'rgba(255,255,255,0.25)',
   },
+  webCard: {
+    position: 'relative',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   cardBack: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  cardBackSolid: {
+    backgroundColor: '#6a5cff',
   },
   cardFront: {
     backgroundColor: '#ffffff',
@@ -118,5 +154,10 @@ const styles = StyleSheet.create({
   image: {
     width: '78%',
     height: '78%',
+  },
+  webHelp: {
+    color: '#ffffff',
+    fontSize: 32,
+    fontWeight: '700',
   },
 });

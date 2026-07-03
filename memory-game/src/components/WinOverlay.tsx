@@ -1,4 +1,4 @@
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 type WinOverlayProps = {
   visible: boolean;
@@ -15,27 +15,45 @@ function formatTime(totalSeconds: number) {
   return `${minutes}:${seconds}`;
 }
 
-export function WinOverlay({ visible, moves, seconds, onPlayAgain }: WinOverlayProps) {
+function WinCard({ moves, seconds, onPlayAgain }: Omit<WinOverlayProps, 'visible'>) {
   return (
-    <Modal visible={visible} transparent animationType="fade">
+    <View style={styles.card}>
+      <Text style={styles.emoji}>🎉</Text>
+      <Text style={styles.title}>Gefeliciteerd!</Text>
+      <Text style={styles.message}>Je hebt alle paartjes gevonden.</Text>
+
+      <View style={styles.summary}>
+        <Text style={styles.summaryLine}>Tijd: {formatTime(seconds)}</Text>
+        <Text style={styles.summaryLine}>Zetten: {moves}</Text>
+      </View>
+
+      <Pressable
+        onPress={onPlayAgain}
+        style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
+      >
+        <Text style={styles.buttonText}>Nog een keer</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+export function WinOverlay({ visible, moves, seconds, onPlayAgain }: WinOverlayProps) {
+  if (!visible) {
+    return null;
+  }
+
+  if (Platform.OS === 'web') {
+    return (
+      <View style={styles.webBackdrop}>
+        <WinCard moves={moves} seconds={seconds} onPlayAgain={onPlayAgain} />
+      </View>
+    );
+  }
+
+  return (
+    <Modal visible transparent animationType="fade">
       <View style={styles.backdrop}>
-        <View style={styles.card}>
-          <Text style={styles.emoji}>🎉</Text>
-          <Text style={styles.title}>Gefeliciteerd!</Text>
-          <Text style={styles.message}>Je hebt alle paartjes gevonden.</Text>
-
-          <View style={styles.summary}>
-            <Text style={styles.summaryLine}>Tijd: {formatTime(seconds)}</Text>
-            <Text style={styles.summaryLine}>Zetten: {moves}</Text>
-          </View>
-
-          <Pressable
-            onPress={onPlayAgain}
-            style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
-          >
-            <Text style={styles.buttonText}>Nog een keer</Text>
-          </Pressable>
-        </View>
+        <WinCard moves={moves} seconds={seconds} onPlayAgain={onPlayAgain} />
       </View>
     </Modal>
   );
@@ -48,6 +66,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 24,
+  },
+  webBackdrop: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: 'rgba(15, 23, 66, 0.72)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+    zIndex: 10,
   },
   card: {
     width: '100%',
