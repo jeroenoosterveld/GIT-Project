@@ -77,8 +77,11 @@ Je hebt nu een **Memory**-icoon op je homescherm.
 **Ik zie geen gh-pages branch**
 → Wacht even en vernieuw de pagina. De branch is al aangemaakt.
 
-**De link werkt niet**
-→ Wacht 2–5 minuten na Save en probeer opnieuw.
+**De link werkt niet / wit scherm**
+→ Gebruik de **nieuwe** URL (niet de oude `/GIT-Project/` link).
+→ Verwijder het oude beginscherm-icoon.
+→ Instellingen → Safari → **Wis geschiedenis en websitedata**.
+→ Open opnieuw: **https://jeroenoosterveld.github.io/Memory-game/**
 
 **Ik zie alleen GitHub Actions**
 → Scroll bij Source omhoog — kies **Deploy from a branch** in plaats van GitHub Actions.

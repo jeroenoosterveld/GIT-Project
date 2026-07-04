@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#4d5fd6',
     minHeight: '100vh' as unknown as number,
+    width: '100%',
     paddingTop: 16,
     paddingBottom: 16,
   },
@@ -90,6 +91,7 @@ const styles = StyleSheet.create({
     maxWidth: 520,
     width: '100%',
     alignSelf: 'center',
+    minHeight: '100%',
   },
   nativeRoot: {
     flex: 1,

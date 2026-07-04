@@ -22,18 +22,37 @@ const pwaTags = `
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Memory" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="theme-color" content="#5b6cff" />
+    <meta name="theme-color" content="#4d5fd6" />
     <link rel="apple-touch-icon" href="/Memory-game/assets/icon.png" />
+    <style>
+      html, body {
+        margin: 0;
+        background-color: #4d5fd6 !important;
+        min-height: 100%;
+        min-height: -webkit-fill-available;
+      }
+      #root {
+        min-height: 100vh;
+        min-height: -webkit-fill-available;
+        background-color: #4d5fd6;
+      }
+      .boot-message {
+        color: #ffffff;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        text-align: center;
+        padding: 48px 24px;
+        font-size: 18px;
+      }
+    </style>
 `;
 
-const cacheCleanupScript = `
+const cleanupScript = `
     <script>
       (function () {
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.getRegistrations().then(function (regs) {
             regs.forEach(function (reg) { reg.unregister(); });
           });
-          navigator.serviceWorker.register('/Memory-game/service-worker.js').catch(function () {});
         }
         if (window.caches) {
           caches.keys().then(function (keys) {
@@ -44,9 +63,13 @@ const cacheCleanupScript = `
     </script>
 `;
 
+const bootMessage =
+  '<p class="boot-message">Memory laden...</p>';
+
 let html = fs.readFileSync(indexPath, 'utf8');
 html = html.replace('</head>', `${pwaTags}  </head>`);
-html = html.replace('</body>', `${cacheCleanupScript}  </body>`);
+html = html.replace('<div id="root"></div>', `<div id="root">${bootMessage}</div>`);
+html = html.replace('</body>', `${cleanupScript}  </body>`);
 
 fs.writeFileSync(indexPath, html);
 console.log(`PWA tags injected into ${indexPath}`);
