@@ -63,10 +63,10 @@ Gebruik altijd **HTTPS**. Drie opties:
 4. Extern adres in de app:
 
 ```
-https://mijnnaam.myqnapcloud.com:443/Public
+https://jeroenoosterveld.myqnapcloud.com/Public
 ```
 
-> Poort `443` mag weggelaten worden: `https://mijnnaam.myqnapcloud.com/Public`
+> Het myQNAPcloud-adres is **niet** je e-mailadres. Controleer de cloudnaam via Configuratiescherm → **myQNAPcloud** als dit adres niet werkt.
 
 #### Optie B: Eigen domein / DDNS
 
@@ -93,8 +93,8 @@ Geen poorten open op internet nodig.
 | Veld | Voorbeeld |
 |------|-----------|
 | **Thuisnetwerk** | `http://192.168.2.27:8080/Public` |
-| **Buiten huis** | `https://mijnnaam.myqnapcloud.com/Public` |
-| **Gebruikersnaam** | `iphone-app` |
+| **Buiten huis** | `https://jeroenoosterveld.myqnapcloud.com/Public` |
+| **Gebruikersnaam** | `jeroenoosterveld@me.com` |
 | **Wachtwoord** | je NAS-wachtwoord |
 | **Opslagmap** | `iphone-app-notities` |
 

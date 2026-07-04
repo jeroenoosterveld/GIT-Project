@@ -6,7 +6,8 @@
 2. Installeer de app via **Expo Go** of **TestFlight**
 3. Vul in de app in:
    - **Thuis:** `http://192.168.2.27:8080/Public`
-   - **Extern:** `https://jouwnaam.myqnapcloud.com/Public`
+   - **Extern:** `https://jeroenoosterveld.myqnapcloud.com/Public`
+   - **Gebruiker:** `jeroenoosterveld@me.com`
 4. Maak notities — ze worden op je QNAP opgeslagen
 
 ## Expo Go (ontwikkeling)
@@ -19,7 +20,7 @@
 
 1. Schakel myQNAPcloud in op je QNAP
 2. Forward HTTPS-poort 443 naar je NAS (of gebruik VPN)
-3. Extern adres: `https://<jouw-naam>.myqnapcloud.com/Public`
+3. Extern adres: `https://jeroenoosterveld.myqnapcloud.com/Public`
 
 Zie [QNAP-SETUP.md](./QNAP-SETUP.md) voor stap-voor-stap instructies.
 

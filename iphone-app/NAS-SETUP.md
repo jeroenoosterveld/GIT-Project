@@ -14,7 +14,7 @@ De app probeert eerst je thuisadres; als dat niet werkt, schakelt ze over naar h
 
 1. Schakel **myQNAPcloud** in via Configuratiescherm
 2. Schakel WebDAV HTTPS in (poort 443 of eigen poort)
-3. Extern adres in de app: `https://<jouw-naam>.myqnapcloud.com/Public`
+3. Extern adres in de app: `https://jeroenoosterveld.myqnapcloud.com/Public`
 
 QNAP regelt DNS; je router moet wel de HTTPS-poort doorsturen naar je NAS.
 

@@ -140,12 +140,12 @@ export function SettingsForm({
 
         <Text style={styles.sectionTitle}>Buiten huis (QNAP)</Text>
         <Text style={styles.help}>
-          HTTPS via myQNAPcloud of eigen domein, bijv. https://naam.myqnapcloud.com/Public
+          HTTPS via myQNAPcloud: https://jeroenoosterveld.myqnapcloud.com/Public
         </Text>
         <TextInput
           value={config.remoteUrl}
           onChangeText={(value) => updateField('remoteUrl', value)}
-          placeholder="https://naam.myqnapcloud.com/Public"
+          placeholder="https://jeroenoosterveld.myqnapcloud.com/Public"
           autoCapitalize="none"
           autoCorrect={false}
           style={styles.input}
@@ -155,7 +155,7 @@ export function SettingsForm({
         <TextInput
           value={config.username}
           onChangeText={(value) => updateField('username', value)}
-          placeholder="Gebruikersnaam"
+          placeholder="jeroenoosterveld@me.com"
           autoCapitalize="none"
           autoCorrect={false}
           style={styles.input}

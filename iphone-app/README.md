@@ -24,7 +24,8 @@ Een iPhone-app die **notities opslaat op je QNAP NAS** via **WebDAV**. Thuis geb
 | Veld | Voorbeeld |
 |------|-----------|
 | Thuis | `http://192.168.2.27:8080/Public` |
-| Buiten huis | `https://mijnnaam.myqnapcloud.com/Public` |
+| Buiten huis | `https://jeroenoosterveld.myqnapcloud.com/Public` |
+| Gebruiker | `jeroenoosterveld@me.com` |
 | Opslagmap | `iphone-app-notities` |
 
 ## App instellen

@@ -2,15 +2,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 
 import { NasConfig, StoredNasConfig } from '../types/nas';
+import { NAS_DEFAULTS } from '../constants/nasDefaults';
 
 const CONFIG_KEY = 'nas.config';
 const PASSWORD_KEY = 'nas.password';
 
 const DEFAULT_CONFIG: NasConfig = {
-  localUrl: 'http://192.168.2.27:8080/Public',
-  remoteUrl: '',
-  username: '',
-  folder: 'iphone-app-notities',
+  localUrl: NAS_DEFAULTS.localUrl,
+  remoteUrl: NAS_DEFAULTS.remoteUrl,
+  username: NAS_DEFAULTS.username,
+  folder: NAS_DEFAULTS.folder,
 };
 
 export async function loadNasConfig(): Promise<StoredNasConfig | null> {
