@@ -1,55 +1,57 @@
-# NAS instellen voor gebruik buiten huis
+# NAS instellen voor gebruik buiten huis (QNAP)
 
-Om je NAS-notities ook **buiten je thuisnetwerk** te gebruiken, moet je NAS bereikbaar zijn via internet. De app probeert eerst het thuisadres; als dat niet werkt, gebruikt ze het externe adres.
+Deze instructies zijn voor **QNAP NAS**. Voor de volledige QNAP-handleiding zie **[QNAP-SETUP.md](./QNAP-SETUP.md)**.
+
+De app probeert eerst je thuisadres; als dat niet werkt, schakelt ze over naar het externe adres.
 
 ## Vereisten
 
-- WebDAV ingeschakeld op je NAS
-- Een **HTTPS**-adres voor externe toegang (aanbevolen)
-- Een NAS-gebruiker met schrijfrechten op de opslagmap
+- WebDAV ingeschakeld op je QNAP (poort 8080 thuis, 443 extern is gebruikelijk)
+- Een **HTTPS**-adres voor externe toegang
+- Een NAS-gebruiker met schrijfrechten op de gedeelde map
 
-## Optie 1: Synology QuickConnect (eenvoudigst)
+## Optie 1: myQNAPcloud (eenvoudigst)
 
-1. Schakel QuickConnect in op je Synology
-2. Schakel WebDAV HTTPS in (poort 5006)
-3. Extern adres in de app: `https://<jouw-id>.quickconnect.to:5006`
+1. Schakel **myQNAPcloud** in via Configuratiescherm
+2. Schakel WebDAV HTTPS in (poort 443 of eigen poort)
+3. Extern adres in de app: `https://<jouw-naam>.myqnapcloud.com/Public`
 
-Synology regelt de tunnel; geen port forwarding nodig.
+QNAP regelt DNS; je router moet wel de HTTPS-poort doorsturen naar je NAS.
 
 ## Optie 2: DDNS + port forwarding
 
-1. Stel **DDNS** in op je router of NAS (bijv. DuckDNS, No-IP)
-2. Forward poort **5006** (HTTPS) naar je NAS
-3. Gebruik een geldig SSL-certificaat (Let's Encrypt via NAS)
-4. Extern adres: `https://jouwnas.duckdns.org:5006`
+1. Stel **DDNS** in op je QNAP of router (QNAP heeft ingebouwde DDNS)
+2. Forward poort **443** (HTTPS WebDAV) naar je NAS
+3. Installeer een SSL-certificaat (Let's Encrypt via QNAP)
+4. Extern adres: `https://jouwnas.duckdns.org/Public`
 
 ## Optie 3: VPN (meest veilig)
 
-1. Installeer **Tailscale**, **WireGuard** of de VPN-server van je NAS
+1. Gebruik **QVPN**, **QuWAN** of **Tailscale** op je NAS en iPhone
 2. Verbind je iPhone met de VPN buiten huis
-3. Gebruik het **thuisadres** als extern adres, of het Tailscale-IP (`100.x.x.x`)
+3. Gebruik het thuisadres of het VPN-IP (`100.x.x.x`)
 
 Geen poorten open op internet nodig.
 
-## Optie 4: Reverse proxy
+## Optie 4: Reverse proxy (gevorderd)
 
-Gebruik Nginx, Caddy of de ingebouwde reverse proxy van je NAS om WebDAV via `https://nas.jouwdomein.nl/webdav` aan te bieden.
+Via QNAP **Webserver** of een container (Nginx/Caddy) kun je WebDAV achter een eigen domein zetten, bijv. `https://nas.jouwdomein.nl/webdav`.
 
 ## Veiligheid
 
 - Gebruik altijd **HTTPS** voor het externe adres
-- Maak een aparte NAS-gebruiker aan voor de app
-- Geef alleen rechten op de notitiemap
+- Maak een aparte QNAP-gebruiker aan voor de app
+- Geef alleen WebDAV-rechten op de notitiemap
 - Overweeg VPN in plaats van open poorten op internet
 
 ## Problemen oplossen
 
 | Probleem | Oplossing |
 |----------|-----------|
-| Werkt thuis, niet extern | Controleer port forwarding, HTTPS en DDNS |
-| Inlogfout | Controleer gebruikersnaam/wachtwoord en WebDAV-rechten |
-| Certificaatfout | Installeer een geldig SSL-certificaat op je NAS |
-| Lege lijst | Controleer of de mapnaam klopt en schrijfrechten heeft |
+| Werkt thuis, niet extern | myQNAPcloud/DDNS, port forwarding (443) en certificaat controleren |
+| 401 / 403 | Gebruikersnaam, wachtwoord en WebDAV-rechten op gedeelde map |
+| Certificaatfout | Geldig SSL-certificaat via QNAP Configuratiescherm |
+| Lege lijst | Gedeelde map in adres opnemen (bijv. `/Public`) |
 
 ## App-testen
 

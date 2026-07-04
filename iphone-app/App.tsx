@@ -80,7 +80,7 @@ export default function App() {
         <StatusBar style="light" />
         <ScreenLayout
           title="NAS instellen"
-          subtitle="Thuis én extern bereikbaar"
+          subtitle="QNAP WebDAV — thuis en extern"
           onBack={storedConfig?.hasPassword ? () => setScreen('notes') : undefined}
         >
           <SettingsForm

@@ -1,13 +1,13 @@
-# NAS Notities op je iPhone
+# NAS Notities op je iPhone (QNAP)
 
 ## Snel starten
 
-1. Zorg dat **WebDAV** aan staat op je NAS (zie [NAS-SETUP.md](./NAS-SETUP.md))
-2. Installeer de app via **Expo Go** (ontwikkeling) of **TestFlight** (build)
-3. Vul in de app je NAS-adressen in:
-   - **Thuis:** `http://192.168.x.x:5005`
-   - **Extern:** `https://jouwnas.example.com:5006`
-4. Maak notities — ze worden op je NAS opgeslagen
+1. Schakel **WebDAV** in op je QNAP (zie [QNAP-SETUP.md](./QNAP-SETUP.md))
+2. Installeer de app via **Expo Go** of **TestFlight**
+3. Vul in de app in:
+   - **Thuis:** `http://192.168.x.x:8080/Public`
+   - **Extern:** `https://jouwnaam.myqnapcloud.com/Public`
+4. Maak notities — ze worden op je QNAP opgeslagen
 
 ## Expo Go (ontwikkeling)
 
@@ -15,14 +15,16 @@
 2. Start op een computer: `npm start`
 3. Scan de QR-code
 
+## Buiten huis (myQNAPcloud)
+
+1. Schakel myQNAPcloud in op je QNAP
+2. Forward HTTPS-poort 443 naar je NAS (of gebruik VPN)
+3. Extern adres: `https://<jouw-naam>.myqnapcloud.com/Public`
+
+Zie [QNAP-SETUP.md](./QNAP-SETUP.md) voor stap-voor-stap instructies.
+
 ## TestFlight / App Store
 
 ```bash
 npm run build:ios
 ```
-
-De build kan via TestFlight worden gedeeld.
-
-## Buiten huis gebruiken
-
-De app schakelt automatisch over naar je externe NAS-adres zodra je niet meer op het thuisnetwerk zit. Zie [NAS-SETUP.md](./NAS-SETUP.md) voor het instellen van QuickConnect, DDNS of VPN.

@@ -125,27 +125,27 @@ export function SettingsForm({
   return (
     <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
       <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Thuisnetwerk</Text>
+        <Text style={styles.sectionTitle}>Thuisnetwerk (QNAP)</Text>
         <Text style={styles.help}>
-          Lokaal NAS-adres, bijvoorbeeld http://192.168.1.50:5005 of http://nas.local:5005/webdav
+          QNAP WebDAV-adres met gedeelde map, bijv. http://192.168.1.50:8080/Public
         </Text>
         <TextInput
           value={config.localUrl}
           onChangeText={(value) => updateField('localUrl', value)}
-          placeholder="http://192.168.1.50:5005"
+          placeholder="http://192.168.1.50:8080/Public"
           autoCapitalize="none"
           autoCorrect={false}
           style={styles.input}
         />
 
-        <Text style={styles.sectionTitle}>Buiten huis</Text>
+        <Text style={styles.sectionTitle}>Buiten huis (QNAP)</Text>
         <Text style={styles.help}>
-          Extern adres via HTTPS, bijvoorbeeld QuickConnect, DDNS of Tailscale.
+          HTTPS via myQNAPcloud of eigen domein, bijv. https://naam.myqnapcloud.com/Public
         </Text>
         <TextInput
           value={config.remoteUrl}
           onChangeText={(value) => updateField('remoteUrl', value)}
-          placeholder="https://mijnas.example.com:5006/webdav"
+          placeholder="https://naam.myqnapcloud.com/Public"
           autoCapitalize="none"
           autoCorrect={false}
           style={styles.input}
@@ -170,7 +170,10 @@ export function SettingsForm({
           style={styles.input}
         />
 
-        <Text style={styles.sectionTitle}>Opslagmap op NAS</Text>
+        <Text style={styles.sectionTitle}>Opslagmap op QNAP</Text>
+        <Text style={styles.help}>
+          Submap binnen je gedeelde map (bijv. Public). De app maakt deze map zelf aan.
+        </Text>
         <TextInput
           value={config.folder}
           onChangeText={(value) => updateField('folder', value)}

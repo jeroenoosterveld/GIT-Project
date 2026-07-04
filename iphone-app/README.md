@@ -1,6 +1,6 @@
 # NAS Notities — React Native (iPhone)
 
-Een iPhone-app die **notities opslaat op je NAS** via **WebDAV**. Thuis gebruikt de app je lokale NAS-adres; buiten huis schakelt hij automatisch over naar je externe adres (HTTPS).
+Een iPhone-app die **notities opslaat op je QNAP NAS** via **WebDAV**. Thuis gebruikt de app je lokale NAS-adres; buiten huis schakelt hij automatisch over naar je externe adres (HTTPS).
 
 ## Wat doet de app?
 
@@ -10,39 +10,39 @@ Een iPhone-app die **notities opslaat op je NAS** via **WebDAV**. Thuis gebruikt
 - Lokale cache als de NAS tijdelijk niet bereikbaar is
 - Wachtwoord veilig opgeslagen in de iOS Keychain (`expo-secure-store`)
 
-## NAS voorbereiden
+## QNAP voorbereiden
 
-De app werkt met vrijwel elke NAS die **WebDAV** ondersteunt (Synology, QNAP, TrueNAS, enz.).
+> Volledige handleiding: **[QNAP-SETUP.md](./QNAP-SETUP.md)**
 
-### Synology (voorbeeld)
+1. **Configuratiescherm** → **Netwerk & bestandsservices** → **Win/Mac/NFS/WebDAV** → tab **WebDAV**
+2. Schakel WebDAV in, kies **Machtiging gedeelde map**
+3. Poorten (standaard webserver): **8080** (HTTP thuis) en **443** (HTTPS extern)
+4. Geef je gebruiker WebDAV **Lezen/Schrijven** op een gedeelde map (bijv. `Public`)
 
-1. **Configuratiescherm → Bestandsservices → WebDAV**
-2. Schakel WebDAV in
-3. Poorten:
-   - **HTTP (thuis):** standaard `5005`
-   - **HTTPS (extern):** standaard `5006`
-4. Maak een app-gebruiker aan met rechten op de gewenste map
+**Voorbeeldadressen:**
 
-**Thuisadres:** `http://192.168.x.x:5005`  
-**Extern (kies één optie):**
-- Synology QuickConnect: `https://<id>.quickconnect.to:5006`
-- Eigen domein / DDNS: `https://nas.jouwdomein.nl:5006`
-- Tailscale/VPN: `http://100.x.x.x:5005` (via VPN-tunnel)
-
-### QNAP (voorbeeld)
-
-1. **Configuratiescherm → Netwerk & bestandsservices → WebDAV**
-2. Schakel WebDAV in
-3. Gebruik poort `8080` (HTTP) of `443`/`984` (HTTPS), afhankelijk van je instellingen
+| Veld | Voorbeeld |
+|------|-----------|
+| Thuis | `http://192.168.1.50:8080/Public` |
+| Buiten huis | `https://mijnnaam.myqnapcloud.com/Public` |
+| Opslagmap | `iphone-app-notities` |
 
 ## App instellen
 
 1. Open **Instellingen** in de app
-2. Vul **thuisnetwerk-adres** in (HTTP mag op lokaal netwerk)
-3. Vul **buiten huis-adres** in (gebruik **HTTPS**)
-4. Vul gebruikersnaam en wachtwoord in
+2. Vul **thuisnetwerk-adres** in (HTTP op lokaal netwerk)
+3. Vul **buiten huis-adres** in (altijd **HTTPS**, bijv. myQNAPcloud)
+4. Vul QNAP-gebruikersnaam en wachtwoord in
 5. Kies een mapnaam (standaard: `iphone-app-notities`)
 6. Tik op **Test verbinding** en daarna **Opslaan**
+
+## Buiten huis
+
+- **myQNAPcloud** — eenvoudigst (zie QNAP-SETUP.md)
+- **DDNS + port forwarding** — eigen domein, poort 443
+- **VPN (QVPN / Tailscale)** — het veiligst
+
+Zie [NAS-SETUP.md](./NAS-SETUP.md) voor details.
 
 ## Technologie
 
@@ -66,5 +66,3 @@ npm start
 ```bash
 npm run build:ios
 ```
-
-Zie ook [NAS-SETUP.md](./NAS-SETUP.md) voor uitgebreide instructies over externe toegang.
