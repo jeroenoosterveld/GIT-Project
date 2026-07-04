@@ -43,7 +43,6 @@ export function useMemoryGame(cardThemes: CardTheme[]) {
 
   cardThemesRef.current = cardThemes;
 
-  const columns = DIFFICULTY_CONFIG[difficulty].columns;
   const totalPairs = Math.min(DIFFICULTY_CONFIG[difficulty].pairs, cardThemes.length);
   const isComplete = matchedIds.length === cards.length && cards.length > 0;
 
@@ -144,7 +143,6 @@ export function useMemoryGame(cardThemes: CardTheme[]) {
 
   return {
     cards,
-    columns,
     difficulty,
     flippedIds,
     matchedIds,

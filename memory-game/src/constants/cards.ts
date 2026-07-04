@@ -5,7 +5,9 @@ export type CardTheme = {
   image: ImageSourcePropType;
 };
 
-export const MIN_PHOTOS_REQUIRED = 6;
+export const MIN_PHOTOS_REQUIRED = 5;
+export const ROWS_PER_COLUMN = 5;
+export const REFERENCE_COLUMNS = 4;
 
 export const DEFAULT_CARD_THEMES: CardTheme[] = [
   { id: 'dog', image: require('../../assets/cards/dog.png') },
@@ -16,6 +18,8 @@ export const DEFAULT_CARD_THEMES: CardTheme[] = [
   { id: 'koala', image: require('../../assets/cards/koala.png') },
   { id: 'lion', image: require('../../assets/cards/lion.png') },
   { id: 'tiger', image: require('../../assets/cards/tiger.png') },
+  { id: 'rabbit', image: require('../../assets/cards/rabbit.png') },
+  { id: 'bear', image: require('../../assets/cards/bear.png') },
 ];
 
 /** @deprecated use DEFAULT_CARD_THEMES */
@@ -25,8 +29,12 @@ export type Difficulty = 'easy' | 'medium';
 
 export const DIFFICULTY_CONFIG: Record<
   Difficulty,
-  { label: string; pairs: number; columns: number }
+  { label: string; pairs: number }
 > = {
-  easy: { label: 'Makkelijk', pairs: 6, columns: 3 },
-  medium: { label: 'Normaal', pairs: 8, columns: 4 },
+  easy: { label: 'Makkelijk', pairs: 5 },
+  medium: { label: 'Normaal', pairs: 10 },
 };
+
+export function getColumnCount(cardCount: number): number {
+  return Math.ceil(cardCount / ROWS_PER_COLUMN);
+}

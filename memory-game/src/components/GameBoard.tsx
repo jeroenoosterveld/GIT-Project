@@ -1,12 +1,16 @@
 import { Dimensions, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Difficulty, DIFFICULTY_CONFIG } from '../constants/cards';
+import {
+  Difficulty,
+  DIFFICULTY_CONFIG,
+  REFERENCE_COLUMNS,
+  ROWS_PER_COLUMN,
+} from '../constants/cards';
 import { GameCard } from '../hooks/useMemoryGame';
 import { MemoryCard } from './MemoryCard';
 
 type GameBoardProps = {
   cards: GameCard[];
-  columns: number;
   flippedIds: string[];
   matchedIds: string[];
   isLocked: boolean;
@@ -16,28 +20,40 @@ type GameBoardProps = {
 const BOARD_GAP = 10;
 const BOARD_HORIZONTAL_PADDING = 18;
 
+function buildColumns(cardList: GameCard[]): GameCard[][] {
+  const columnCount = Math.ceil(cardList.length / ROWS_PER_COLUMN);
+  return Array.from({ length: columnCount }, (_, columnIndex) =>
+    cardList.slice(columnIndex * ROWS_PER_COLUMN, columnIndex * ROWS_PER_COLUMN + ROWS_PER_COLUMN),
+  );
+}
+
 export function GameBoard({
   cards,
-  columns,
   flippedIds,
   matchedIds,
   isLocked,
   onFlip,
 }: GameBoardProps) {
   const boardWidth = Dimensions.get('window').width - BOARD_HORIZONTAL_PADDING * 2;
-  const cardWidth = (boardWidth - BOARD_GAP * (columns - 1)) / columns;
+  const cardWidth =
+    (boardWidth - BOARD_GAP * (REFERENCE_COLUMNS - 1)) / REFERENCE_COLUMNS;
+  const columns = buildColumns(cards);
 
   return (
     <View style={[styles.board, { gap: BOARD_GAP }]}>
-      {cards.map((card) => (
-        <View key={card.uid} style={[styles.cardSlot, { width: cardWidth }]}>
-          <MemoryCard
-            image={card.image}
-            isFlipped={flippedIds.includes(card.uid)}
-            isMatched={matchedIds.includes(card.uid)}
-            disabled={isLocked}
-            onPress={() => onFlip(card.uid)}
-          />
+      {columns.map((columnCards, columnIndex) => (
+        <View key={`column-${columnIndex}`} style={[styles.column, { gap: BOARD_GAP, width: cardWidth }]}>
+          {columnCards.map((card) => (
+            <View key={card.uid} style={[styles.cardSlot, { width: cardWidth }]}>
+              <MemoryCard
+                image={card.image}
+                isFlipped={flippedIds.includes(card.uid)}
+                isMatched={matchedIds.includes(card.uid)}
+                disabled={isLocked}
+                onPress={() => onFlip(card.uid)}
+              />
+            </View>
+          ))}
         </View>
       ))}
     </View>
@@ -73,9 +89,11 @@ export function DifficultyPicker({ difficulty, onChange }: DifficultyPickerProps
 const styles = StyleSheet.create({
   board: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+  },
+  column: {
+    flexDirection: 'column',
   },
   cardSlot: {
     minWidth: 72,
