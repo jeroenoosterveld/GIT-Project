@@ -52,9 +52,9 @@ export function MemoryCard({
         disabled={disabled || showFront}
         style={({ pressed }) => [styles.pressable, pressed && styles.pressed]}
       >
-        <View style={[styles.cardFace, styles.webCard, showFront ? styles.cardFront : styles.cardBackSolid]}>
+        <View style={[styles.cardFace, showFront ? styles.cardFront : styles.cardBackSolid, !showFront && styles.webCardBack]}>
           {showFront ? (
-            <Image source={image} style={styles.image} resizeMode="contain" />
+            <Image source={image} style={styles.imageFull} resizeMode="cover" />
           ) : (
             <Text style={styles.webHelp}>?</Text>
           )}
@@ -98,7 +98,7 @@ export function MemoryCard({
             { transform: [{ rotateY: backRotation }] },
           ]}
         >
-          <Image source={image} style={styles.image} resizeMode="contain" />
+          <Image source={image} style={styles.imageFull} resizeMode="cover" />
         </Animated.View>
       </View>
     </Pressable>
@@ -127,9 +127,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'rgba(255,255,255,0.25)',
   },
-  webCard: {
-    position: 'relative',
-    flex: 1,
+  webCardBack: {
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -142,18 +140,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#6a5cff',
   },
   cardFront: {
-    backgroundColor: '#ffffff',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 10,
+    backgroundColor: '#1a1a2e',
+    overflow: 'hidden',
   },
   cardMatched: {
     borderColor: '#7dffb2',
-    backgroundColor: '#f3fff8',
   },
-  image: {
-    width: '78%',
-    height: '78%',
+  imageFull: {
+    ...StyleSheet.absoluteFill,
+    width: '100%',
+    height: '100%',
   },
   webHelp: {
     color: '#ffffff',
