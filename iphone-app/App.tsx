@@ -1,67 +1,188 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { ConnectionBadge } from './src/components/ConnectionBadge';
+import { NoteEditor } from './src/components/NoteEditor';
+import { NotesList } from './src/components/NotesList';
+import { ScreenLayout } from './src/components/ScreenLayout';
+import { SettingsForm } from './src/components/SettingsForm';
 import { APP_VERSION } from './src/constants/app';
+import { useNasConnection } from './src/hooks/useNasConnection';
+import { useNotes } from './src/hooks/useNotes';
+import { Note } from './src/types/note';
+
+type Screen = 'notes' | 'settings' | 'editor';
 
 export default function App() {
+  const {
+    config,
+    setConfig,
+    storedConfig,
+    status,
+    isLoading,
+    isSaving,
+    isTesting,
+    error,
+    saveConnection,
+    testConnection,
+    reconnect,
+    disconnect,
+  } = useNasConnection();
+
+  const {
+    notes,
+    isLoading: notesLoading,
+    isSaving: noteSaving,
+    error: notesError,
+    lastSyncMessage,
+    refreshNotes,
+    saveNote,
+    deleteNote,
+    clearLocalData,
+  } = useNotes(storedConfig, status);
+
+  const [screen, setScreen] = useState<Screen>('notes');
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+
+  useEffect(() => {
+    if (!isLoading && !storedConfig?.hasPassword) {
+      setScreen('settings');
+    }
+  }, [isLoading, storedConfig?.hasPassword]);
+
+  const openEditor = (note: Note | null) => {
+    setSelectedNote(note);
+    setScreen('editor');
+  };
+
+  const handleDisconnect = async () => {
+    await disconnect();
+    await clearLocalData();
+    setScreen('settings');
+  };
+
+  if (isLoading) {
+    return (
+      <SafeAreaProvider>
+        <View style={styles.loadingScreen}>
+          <ActivityIndicator size="large" color="#2f3f9f" />
+          <Text style={styles.loadingLabel}>NAS Notities laden...</Text>
+        </View>
+      </SafeAreaProvider>
+    );
+  }
+
+  if (screen === 'settings') {
+    return (
+      <SafeAreaProvider>
+        <StatusBar style="light" />
+        <ScreenLayout
+          title="NAS instellen"
+          subtitle="Thuis én extern bereikbaar"
+          onBack={storedConfig?.hasPassword ? () => setScreen('notes') : undefined}
+        >
+          <SettingsForm
+            config={config}
+            hasStoredPassword={Boolean(storedConfig?.hasPassword)}
+            isSaving={isSaving}
+            isTesting={isTesting}
+            error={error}
+            onChange={setConfig}
+            onSave={async (nextConfig, password) => {
+              await saveConnection(nextConfig, password);
+              setScreen('notes');
+            }}
+            onTest={async (nextConfig, password) => {
+              await testConnection(nextConfig, password);
+            }}
+            onDisconnect={handleDisconnect}
+          />
+        </ScreenLayout>
+      </SafeAreaProvider>
+    );
+  }
+
+  if (screen === 'editor') {
+    return (
+      <SafeAreaProvider>
+        <StatusBar style="light" />
+        <ScreenLayout
+          title={selectedNote ? 'Notitie bewerken' : 'Nieuwe notitie'}
+          onBack={() => setScreen('notes')}
+        >
+          <NoteEditor
+            note={selectedNote}
+            isSaving={noteSaving}
+            onSave={async (draft) => {
+              const saved = await saveNote(selectedNote?.id ?? null, draft);
+              setSelectedNote(saved);
+              setScreen('notes');
+            }}
+            onDelete={
+              selectedNote
+                ? async () => {
+                    await deleteNote(selectedNote.id);
+                    setSelectedNote(null);
+                    setScreen('notes');
+                  }
+                : undefined
+            }
+          />
+        </ScreenLayout>
+      </SafeAreaProvider>
+    );
+  }
+
   return (
     <SafeAreaProvider>
-      <LinearGradient colors={['#2f3f9f', '#5b6cff']} style={styles.gradient}>
-        <SafeAreaView style={styles.container}>
-          <StatusBar style="light" />
-          <View style={styles.card}>
-            <Text style={styles.title}>Nieuwe App</Text>
-            <Text style={styles.subtitle}>
-              Expo + React Native project is klaar. Specificaties volgen nog.
-            </Text>
-            <Text style={styles.version}>v{APP_VERSION}</Text>
-          </View>
-        </SafeAreaView>
-      </LinearGradient>
+      <StatusBar style="light" />
+      <ScreenLayout
+        title="NAS Notities"
+        subtitle={`v${APP_VERSION}`}
+        rightAction={
+          <TouchableOpacity onPress={() => setScreen('settings')} style={styles.settingsButton}>
+            <Text style={styles.settingsText}>Instellingen</Text>
+          </TouchableOpacity>
+        }
+      >
+        <ConnectionBadge status={status} />
+        <NotesList
+          notes={notes}
+          isLoading={notesLoading}
+          error={notesError}
+          lastSyncMessage={lastSyncMessage}
+          onRefresh={() => {
+            void reconnect();
+            void refreshNotes();
+          }}
+          onSelectNote={(note) => openEditor(note)}
+          onCreateNote={() => openEditor(null)}
+        />
+      </ScreenLayout>
     </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  gradient: {
-    flex: 1,
-  },
-  container: {
+  loadingScreen: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 24,
+    backgroundColor: '#eef2ff',
+    gap: 12,
   },
-  card: {
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 20,
-    padding: 32,
-    width: '100%',
-    maxWidth: 360,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 6,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
+  loadingLabel: {
     color: '#2f3f9f',
-    marginBottom: 12,
-  },
-  subtitle: {
     fontSize: 16,
-    color: '#444',
-    textAlign: 'center',
-    lineHeight: 24,
   },
-  version: {
-    marginTop: 24,
-    fontSize: 13,
-    color: '#888',
+  settingsButton: {
+    paddingVertical: 8,
+  },
+  settingsText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
   },
 });

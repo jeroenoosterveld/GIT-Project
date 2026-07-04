@@ -1,23 +1,28 @@
-# Nieuwe App op je iPhone
+# NAS Notities op je iPhone
 
-Deze app wordt gebouwd met dezelfde technologie als het Memory-spel (Expo + React Native).
+## Snel starten
 
-## Opties om te installeren
+1. Zorg dat **WebDAV** aan staat op je NAS (zie [NAS-SETUP.md](./NAS-SETUP.md))
+2. Installeer de app via **Expo Go** (ontwikkeling) of **TestFlight** (build)
+3. Vul in de app je NAS-adressen in:
+   - **Thuis:** `http://192.168.x.x:5005`
+   - **Extern:** `https://jouwnas.example.com:5006`
+4. Maak notities — ze worden op je NAS opgeslagen
 
-### 1. Expo Go (ontwikkeling)
+## Expo Go (ontwikkeling)
 
-1. Installeer [Expo Go](https://apps.apple.com/app/expo-go/id982107779) uit de App Store
-2. Start het project op een computer: `npm start`
-3. Scan de QR-code met je iPhone-camera
+1. Installeer [Expo Go](https://apps.apple.com/app/expo-go/id982107779)
+2. Start op een computer: `npm start`
+3. Scan de QR-code
 
-### 2. TestFlight (testversie)
+## TestFlight / App Store
 
-Na een EAS Build (`npm run build:ios`) kun je de app via TestFlight delen met testers.
+```bash
+npm run build:ios
+```
 
-### 3. App Store (productie)
+De build kan via TestFlight worden gedeeld.
 
-Gebruik `npm run build:ios:production` en dien de build in via App Store Connect.
+## Buiten huis gebruiken
 
----
-
-*Meer instructies volgen zodra de app-specificaties bekend zijn.*
+De app schakelt automatisch over naar je externe NAS-adres zodra je niet meer op het thuisnetwerk zit. Zie [NAS-SETUP.md](./NAS-SETUP.md) voor het instellen van QuickConnect, DDNS of VPN.
