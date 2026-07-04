@@ -2,8 +2,8 @@
   "name": "Memory",
   "short_name": "Memory",
   "description": "Offline memory spelletje met kaartjes",
-  "start_url": "/GIT-Project/",
-  "scope": "/GIT-Project/",
+  "start_url": "/Memory-game/",
+  "scope": "/Memory-game/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#2f3f9f",
@@ -11,7 +11,7 @@
   "lang": "nl",
   "icons": [
     {
-      "src": "/GIT-Project/assets/icon.png",
+      "src": "/Memory-game/assets/icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

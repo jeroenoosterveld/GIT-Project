@@ -18,7 +18,7 @@ Een memory-spelletje voor iPhone gebouwd met **Expo** en **React Native**. Alle 
 
 Korte versie:
 1. Zet GitHub Pages aan (via Safari op github.com)
-2. Open **https://jeroenoosterveld.github.io/GIT-Project/**
+2. Open **https://jeroenoosterveld.github.io/Memory-game/**
 3. Safari → Deel → **Zet op beginscherm**
 
 ---

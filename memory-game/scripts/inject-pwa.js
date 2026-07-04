@@ -18,12 +18,12 @@ fs.mkdirSync(iconTargetDir, { recursive: true });
 fs.copyFileSync(iconSource, iconTarget);
 
 const pwaTags = `
-    <link rel="manifest" href="/GIT-Project/manifest.webmanifest" />
+    <link rel="manifest" href="/Memory-game/manifest.webmanifest" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Memory" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="theme-color" content="#5b6cff" />
-    <link rel="apple-touch-icon" href="/GIT-Project/assets/icon.png" />
+    <link rel="apple-touch-icon" href="/Memory-game/assets/icon.png" />
 `;
 
 const cacheCleanupScript = `
@@ -33,7 +33,7 @@ const cacheCleanupScript = `
           navigator.serviceWorker.getRegistrations().then(function (regs) {
             regs.forEach(function (reg) { reg.unregister(); });
           });
-          navigator.serviceWorker.register('/GIT-Project/service-worker.js').catch(function () {});
+          navigator.serviceWorker.register('/Memory-game/service-worker.js').catch(function () {});
         }
         if (window.caches) {
           caches.keys().then(function (keys) {

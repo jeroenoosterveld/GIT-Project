@@ -2,7 +2,18 @@
 
 Geen Mac, geen server, geen Expo Go nodig. Je zet het spel op je **beginscherm** als app — en het werkt daarna **offline**.
 
-Het spel staat al klaar op GitHub. Je hoeft alleen **GitHub Pages** aan te zetten (geen GitHub Actions nodig).
+---
+
+## Eerst: repository hernoemen (één keer)
+
+De repository heet nu **Memory-game**. Hernoem hem op GitHub:
+
+1. Open in Safari: **https://github.com/jeroenoosterveld/GIT-Project/settings**
+2. Scroll naar **Repository name**
+3. Vul in: **`Memory-game`**
+4. Tik op **Rename**
+
+GitHub past de URL automatisch aan. Oude links worden doorgestuurd.
 
 ---
 
@@ -10,7 +21,7 @@ Het spel staat al klaar op GitHub. Je hoeft alleen **GitHub Pages** aan te zette
 
 Open in **Safari** op je iPhone:
 
-**https://github.com/jeroenoosterveld/GIT-Project/settings/pages**
+**https://github.com/jeroenoosterveld/Memory-game/settings/pages**
 
 Log in op GitHub als dat nodig is.
 
@@ -37,7 +48,7 @@ Even wachten (1–2 minuten). Vernieuw de pagina — je ziet dan een groene meld
 
 Ga in Safari naar:
 
-**https://jeroenoosterveld.github.io/GIT-Project/**
+**https://jeroenoosterveld.github.io/Memory-game/**
 
 ---
 
