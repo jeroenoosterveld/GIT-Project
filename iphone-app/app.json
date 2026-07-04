@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "Nieuwe App",
+    "slug": "iphone-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#2f3f9f"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jeroenoosterveld.iphoneapp"
+    },
+    "android": {
+      "package": "com.jeroenoosterveld.iphoneapp",
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "name": "Nieuwe App",
+      "shortName": "Nieuwe App",
+      "description": "Nieuwe iPhone app",
+      "themeColor": "#5b6cff",
+      "backgroundColor": "#2f3f9f",
+      "display": "standalone",
+      "orientation": "portrait",
+      "lang": "nl"
+    }
+  }
+}
