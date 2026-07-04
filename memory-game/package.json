@@ -24,7 +24,9 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "export:web": "expo export --platform web --output-dir dist-web && node scripts/inject-pwa.js dist-web",
+    "version:web": "node scripts/generate-build-version.js",
+    "export:web": "node scripts/generate-build-version.js && expo export --platform web --output-dir dist-web && node scripts/inject-pwa.js dist-web",
+    "deploy:pages": "node scripts/deploy-pages.js",
     "build:ios": "eas build --platform ios --profile preview",
     "build:ios:production": "eas build --platform ios --profile production"
   },

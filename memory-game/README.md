@@ -23,7 +23,15 @@ Korte versie:
 
 ---
 
-## Native iOS-app (wel computer nodig)
+## Publiceren (iPhone-updates)
+
+```bash
+npm run deploy:pages
+```
+
+Dit genereert automatisch een nieuwe versie, cache-busting, en publiceert naar GitHub Pages. Zie **[DEPLOY.md](./DEPLOY.md)**.
+
+---
 
 Voor een echte App Store-app of TestFlight-build heb je een Mac of EAS Build nodig. Zie eerdere instructies met `eas build`.
 

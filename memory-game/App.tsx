@@ -8,6 +8,7 @@ import { GameHeader } from './src/components/GameHeader';
 import { PhotoPickerButton } from './src/components/PhotoPickerButton';
 import { WinOverlay } from './src/components/WinOverlay';
 import { CardTheme, DEFAULT_CARD_THEMES } from './src/constants/cards';
+import { BUILD_VERSION } from './src/constants/buildVersion';
 import { useMemoryGame } from './src/hooks/useMemoryGame';
 import { storedPhotosToThemes, validatePhotoCount } from './src/utils/cardThemes';
 import { clearStoredPhotos, loadStoredPhotos, saveStoredPhotos, StoredPhoto } from './src/utils/photoStorage';
@@ -131,7 +132,7 @@ export default function App() {
           />
         ) : null}
 
-        <Text style={styles.versionLabel}>Versie: foto&apos;s update</Text>
+        <Text style={styles.versionLabel}>Versie: {BUILD_VERSION}</Text>
 
         <DifficultyPicker difficulty={difficulty} onChange={changeDifficulty} />
 
