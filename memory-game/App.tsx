@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { DifficultyPicker, GameBoard } from './src/components/GameBoard';
@@ -131,6 +131,8 @@ export default function App() {
           />
         ) : null}
 
+        <Text style={styles.versionLabel}>Versie: foto&apos;s update</Text>
+
         <DifficultyPicker difficulty={difficulty} onChange={changeDifficulty} />
 
         <GameBoard
@@ -201,5 +203,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingBottom: 28,
     gap: 20,
+  },
+  versionLabel: {
+    color: 'rgba(255,255,255,0.55)',
+    fontSize: 12,
+    textAlign: 'center',
   },
 });

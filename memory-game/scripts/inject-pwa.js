@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
+const BUILD_VERSION = '2026-07-04-fotos';
 const outputDir = process.argv[2] || 'dist-web';
 const indexPath = path.join(outputDir, 'index.html');
 const iconSource = path.join('assets', 'icon.png');
@@ -64,11 +65,12 @@ const cleanupScript = `
 `;
 
 const bootMessage =
-  '<p class="boot-message">Memory laden...</p>';
+  `<p class="boot-message">Memory laden…<br/><small>versie ${BUILD_VERSION}</small></p>`;
 
 let html = fs.readFileSync(indexPath, 'utf8');
 html = html.replace('</head>', `${pwaTags}  </head>`);
 html = html.replace('<div id="root"></div>', `<div id="root">${bootMessage}</div>`);
+html = html.replace(/(\/_expo\/static\/js\/web\/index-[a-f0-9]+\.js)"/, `$1?v=${BUILD_VERSION}"`);
 html = html.replace('</body>', `${cleanupScript}  </body>`);
 
 fs.writeFileSync(indexPath, html);
