@@ -5,7 +5,9 @@ export type CardTheme = {
   image: ImageSourcePropType;
 };
 
-export const CARD_THEMES: CardTheme[] = [
+export const MIN_PHOTOS_REQUIRED = 6;
+
+export const DEFAULT_CARD_THEMES: CardTheme[] = [
   { id: 'dog', image: require('../../assets/cards/dog.png') },
   { id: 'cat', image: require('../../assets/cards/cat.png') },
   { id: 'fox', image: require('../../assets/cards/fox.png') },
@@ -15,6 +17,9 @@ export const CARD_THEMES: CardTheme[] = [
   { id: 'lion', image: require('../../assets/cards/lion.png') },
   { id: 'tiger', image: require('../../assets/cards/tiger.png') },
 ];
+
+/** @deprecated use DEFAULT_CARD_THEMES */
+export const CARD_THEMES = DEFAULT_CARD_THEMES;
 
 export type Difficulty = 'easy' | 'medium';
 

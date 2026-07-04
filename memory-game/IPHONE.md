@@ -67,6 +67,13 @@ Je hebt nu een **Memory**-icoon op je homescherm.
 - Open het spel **één keer met internet** (zodat alles geladen wordt)
 - Daarna kun je het ook **zonder wifi** spelen
 
+## Je eigen foto's gebruiken
+
+1. Tik op **Mijn foto's kiezen**
+2. Selecteer **minimaal 6 foto's** uit je fotobibliotheek (8 is ideaal voor Normaal)
+3. De foto's worden **op je iPhone opgeslagen** — geen upload naar een server
+4. Tik op **Standaard plaatjes** om terug te gaan naar de dieren
+
 ---
 
 ## Hulp nodig?

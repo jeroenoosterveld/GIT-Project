@@ -1,15 +1,27 @@
 import { StatusBar } from 'expo-status-bar';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { DifficultyPicker, GameBoard } from './src/components/GameBoard';
 import { GameHeader } from './src/components/GameHeader';
+import { PhotoPickerButton } from './src/components/PhotoPickerButton';
 import { WinOverlay } from './src/components/WinOverlay';
+import { CardTheme, DEFAULT_CARD_THEMES } from './src/constants/cards';
 import { useMemoryGame } from './src/hooks/useMemoryGame';
+import { storedPhotosToThemes, validatePhotoCount } from './src/utils/cardThemes';
+import { clearStoredPhotos, loadStoredPhotos, saveStoredPhotos, StoredPhoto } from './src/utils/photoStorage';
+import { resizeImageFile } from './src/utils/resizeImage';
 
 const isWeb = Platform.OS === 'web';
 
 export default function App() {
+  const [cardThemes, setCardThemes] = useState<CardTheme[]>(DEFAULT_CARD_THEMES);
+  const [usingCustomPhotos, setUsingCustomPhotos] = useState(false);
+  const [photoError, setPhotoError] = useState<string | null>(null);
+  const [isSavingPhotos, setIsSavingPhotos] = useState(false);
+  const [photosLoaded, setPhotosLoaded] = useState(!isWeb);
+
   const {
     cards,
     columns,
@@ -22,7 +34,75 @@ export default function App() {
     changeDifficulty,
     flipCard,
     resetGame,
-  } = useMemoryGame();
+  } = useMemoryGame(cardThemes);
+
+  useEffect(() => {
+    if (!isWeb) {
+      return;
+    }
+
+    loadStoredPhotos()
+      .then((photos) => {
+        if (photos.length >= 6) {
+          setCardThemes(storedPhotosToThemes(photos));
+          setUsingCustomPhotos(true);
+        }
+      })
+      .finally(() => setPhotosLoaded(true));
+  }, []);
+
+  const photoCount = useMemo(
+    () => (usingCustomPhotos ? cardThemes.length : 0),
+    [cardThemes.length, usingCustomPhotos],
+  );
+
+  const handlePickPhotos = useCallback(async (files: File[]) => {
+    const validationError = validatePhotoCount(files.length);
+    if (validationError) {
+      setPhotoError(validationError);
+      return;
+    }
+
+    setIsSavingPhotos(true);
+    setPhotoError(null);
+
+    try {
+      const selected = files.slice(0, 8);
+      const stored: StoredPhoto[] = [];
+
+      for (let index = 0; index < selected.length; index += 1) {
+        const uri = await resizeImageFile(selected[index]);
+        stored.push({ id: `photo-${Date.now()}-${index}`, uri });
+      }
+
+      await saveStoredPhotos(stored);
+      setCardThemes(storedPhotosToThemes(stored));
+      setUsingCustomPhotos(true);
+    } catch (error) {
+      setPhotoError(error instanceof Error ? error.message : 'Foto\'s opslaan mislukt.');
+    } finally {
+      setIsSavingPhotos(false);
+    }
+  }, []);
+
+  const handleUseDefaultPhotos = useCallback(async () => {
+    await clearStoredPhotos();
+    setCardThemes(DEFAULT_CARD_THEMES);
+    setUsingCustomPhotos(false);
+    setPhotoError(null);
+  }, []);
+
+  if (!photosLoaded) {
+    return (
+      <View style={styles.webRoot}>
+        <View style={styles.webInner}>
+          <View style={styles.loadingBox}>
+            <StatusBar style="light" />
+          </View>
+        </View>
+      </View>
+    );
+  }
 
   const content = (
     <>
@@ -36,8 +116,20 @@ export default function App() {
           seconds={stats.seconds}
           matchedPairs={stats.matchedPairs}
           totalPairs={stats.totalPairs}
+          usingCustomPhotos={usingCustomPhotos}
           onRestart={() => resetGame()}
         />
+
+        {isWeb ? (
+          <PhotoPickerButton
+            usingCustomPhotos={usingCustomPhotos}
+            photoCount={photoCount}
+            onPickPhotos={handlePickPhotos}
+            onUseDefaultPhotos={handleUseDefaultPhotos}
+            errorMessage={photoError}
+            isSaving={isSavingPhotos}
+          />
+        ) : null}
 
         <DifficultyPicker difficulty={difficulty} onChange={changeDifficulty} />
 
@@ -92,6 +184,11 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
     minHeight: '100%',
+  },
+  loadingBox: {
+    flex: 1,
+    minHeight: '100vh' as unknown as number,
+    backgroundColor: '#4d5fd6',
   },
   nativeRoot: {
     flex: 1,

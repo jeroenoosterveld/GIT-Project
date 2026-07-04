@@ -5,6 +5,7 @@ type GameHeaderProps = {
   seconds: number;
   matchedPairs: number;
   totalPairs: number;
+  usingCustomPhotos: boolean;
   onRestart: () => void;
 };
 
@@ -21,13 +22,16 @@ export function GameHeader({
   seconds,
   matchedPairs,
   totalPairs,
+  usingCustomPhotos,
   onRestart,
 }: GameHeaderProps) {
   return (
     <View style={styles.container}>
       <View>
         <Text style={styles.title}>Memory</Text>
-        <Text style={styles.subtitle}>Vind alle paartjes — volledig offline</Text>
+        <Text style={styles.subtitle}>
+          {usingCustomPhotos ? 'Met jouw foto\'s — volledig offline' : 'Vind alle paartjes — volledig offline'}
+        </Text>
       </View>
 
       <View style={styles.statsRow}>
