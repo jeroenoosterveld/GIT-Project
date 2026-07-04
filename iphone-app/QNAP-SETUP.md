@@ -41,7 +41,7 @@ Stap-voor-stap instructies voor je **QNAP NAS** (QTS 5.x). De app praat met je N
 Gebruik het **IP-adres** of **NAS-hostnaam** + poort + **naam van de gedeelde map**:
 
 ```
-http://192.168.1.50:8080/Public
+http://192.168.2.27:8080/Public
 ```
 
 Of met hostnaam:
@@ -92,7 +92,7 @@ Geen poorten open op internet nodig.
 
 | Veld | Voorbeeld |
 |------|-----------|
-| **Thuisnetwerk** | `http://192.168.1.50:8080/Public` |
+| **Thuisnetwerk** | `http://192.168.2.27:8080/Public` |
 | **Buiten huis** | `https://mijnnaam.myqnapcloud.com/Public` |
 | **Gebruikersnaam** | `iphone-app` |
 | **Wachtwoord** | je NAS-wachtwoord |
@@ -106,7 +106,7 @@ Als je geen map in het adres wilt:
 
 | Veld | Waarde |
 |------|--------|
-| **Thuisnetwerk** | `http://192.168.1.50:8080` |
+| **Thuisnetwerk** | `http://192.168.2.27:8080` |
 | **Opslagmap** | `Public/iphone-app-notities` |
 
 Beide manieren werken.

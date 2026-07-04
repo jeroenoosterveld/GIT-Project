@@ -5,7 +5,7 @@
 1. Schakel **WebDAV** in op je QNAP (zie [QNAP-SETUP.md](./QNAP-SETUP.md))
 2. Installeer de app via **Expo Go** of **TestFlight**
 3. Vul in de app in:
-   - **Thuis:** `http://192.168.x.x:8080/Public`
+   - **Thuis:** `http://192.168.2.27:8080/Public`
    - **Extern:** `https://jouwnaam.myqnapcloud.com/Public`
 4. Maak notities — ze worden op je QNAP opgeslagen
 

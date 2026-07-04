@@ -127,12 +127,12 @@ export function SettingsForm({
       <View style={styles.card}>
         <Text style={styles.sectionTitle}>Thuisnetwerk (QNAP)</Text>
         <Text style={styles.help}>
-          QNAP WebDAV-adres met gedeelde map, bijv. http://192.168.1.50:8080/Public
+          QNAP WebDAV-adres met gedeelde map: http://192.168.2.27:8080/Public
         </Text>
         <TextInput
           value={config.localUrl}
           onChangeText={(value) => updateField('localUrl', value)}
-          placeholder="http://192.168.1.50:8080/Public"
+          placeholder="http://192.168.2.27:8080/Public"
           autoCapitalize="none"
           autoCorrect={false}
           style={styles.input}

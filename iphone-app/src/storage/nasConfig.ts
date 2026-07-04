@@ -7,7 +7,7 @@ const CONFIG_KEY = 'nas.config';
 const PASSWORD_KEY = 'nas.password';
 
 const DEFAULT_CONFIG: NasConfig = {
-  localUrl: '',
+  localUrl: 'http://192.168.2.27:8080/Public',
   remoteUrl: '',
   username: '',
   folder: 'iphone-app-notities',
