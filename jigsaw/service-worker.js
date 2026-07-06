@@ -1,4 +1,4 @@
-const CACHE_NAME = 'jigsaw-blokken-v1';
+const CACHE_NAME = 'jigsaw-blokken-v2';
 const ASSETS = [
   './',
   './index.html',
