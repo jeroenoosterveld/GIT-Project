@@ -5,6 +5,7 @@ import { applyUpdate, fetchLatestVersion, isUpdateAvailable } from '../utils/che
 
 export function UpdateBanner() {
   const [latestVersion, setLatestVersion] = useState<string | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const check = useCallback(async () => {
     const latest = await fetchLatestVersion();
@@ -36,14 +37,22 @@ export function UpdateBanner() {
 
   return (
     <View style={styles.banner}>
-      <Text style={styles.text}>Nieuwe versie beschikbaar</Text>
+      <Text style={styles.text}>
+        {isUpdating ? 'Bezig met bijwerken…' : 'Nieuwe versie beschikbaar'}
+      </Text>
       <Pressable
         onPress={() => {
-          void applyUpdate(latestVersion);
+          setIsUpdating(true);
+          applyUpdate(latestVersion);
         }}
-        style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+        disabled={isUpdating}
+        style={({ pressed }) => [
+          styles.button,
+          isUpdating && styles.buttonDisabled,
+          pressed && !isUpdating && styles.pressed,
+        ]}
       >
-        <Text style={styles.buttonText}>Bijwerken</Text>
+        <Text style={styles.buttonText}>{isUpdating ? 'Laden…' : 'Bijwerken'}</Text>
       </Pressable>
     </View>
   );
@@ -70,6 +79,9 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     paddingHorizontal: 16,
     paddingVertical: 8,
+  },
+  buttonDisabled: {
+    opacity: 0.7,
   },
   pressed: {
     opacity: 0.9,

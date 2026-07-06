@@ -106,6 +106,7 @@ export default function App() {
         <View style={styles.webInner}>
           <View style={styles.loadingBox}>
             <StatusBar style="light" />
+            <Text style={styles.loadingText}>Memory laden…</Text>
           </View>
         </View>
       </View>
@@ -211,6 +212,13 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: '100vh' as unknown as number,
     backgroundColor: '#4d5fd6',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: '700',
   },
   nativeRoot: {
     flex: 1,

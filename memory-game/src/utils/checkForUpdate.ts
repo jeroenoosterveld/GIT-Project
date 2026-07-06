@@ -27,20 +27,11 @@ export function isUpdateAvailable(latestVersion: string | null): boolean {
   return Boolean(latestVersion && latestVersion !== BUILD_VERSION);
 }
 
-export async function applyUpdate(latestVersion: string) {
-  if ('serviceWorker' in navigator) {
-    const registrations = await navigator.serviceWorker.getRegistrations();
-    await Promise.all(registrations.map((reg) => reg.unregister()));
-  }
-
-  if ('caches' in window) {
-    const keys = await caches.keys();
-    await Promise.all(keys.map((key) => caches.delete(key)));
-  }
-
-  const url = new URL(window.location.href);
-  url.searchParams.set('v', latestVersion);
-  window.location.replace(url.toString());
+export function applyUpdate(latestVersion: string) {
+  const target = new URL(`${BASE_PATH}/`, window.location.origin);
+  target.searchParams.set('v', latestVersion);
+  target.searchParams.set('_', String(Date.now()));
+  window.location.assign(target.toString());
 }
 
 export { BUILD_VERSION };
