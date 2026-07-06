@@ -18,6 +18,7 @@ type MemoryCardProps = {
   isMatched: boolean;
   onPress: () => void;
   disabled: boolean;
+  compact?: boolean;
 };
 
 const isWeb = Platform.OS === 'web';
@@ -28,6 +29,7 @@ export function MemoryCard({
   isMatched,
   onPress,
   disabled,
+  compact = false,
 }: MemoryCardProps) {
   const showFront = isFlipped || isMatched;
   const flipAnim = useRef(new Animated.Value(showFront ? 1 : 0)).current;
@@ -50,7 +52,11 @@ export function MemoryCard({
       <Pressable
         onPress={onPress}
         disabled={disabled || showFront}
-        style={({ pressed }) => [styles.pressable, pressed && styles.pressed]}
+        style={({ pressed }) => [
+          styles.pressable,
+          compact && styles.pressableCompact,
+          pressed && styles.pressed,
+        ]}
       >
         <View style={[styles.cardFace, showFront ? styles.cardFront : styles.cardBackSolid, !showFront && styles.webCardBack]}>
           {showFront ? (
@@ -111,6 +117,11 @@ const styles = StyleSheet.create({
     aspectRatio: 0.78,
     minHeight: 88,
     maxHeight: 130,
+  },
+  pressableCompact: {
+    minHeight: 58,
+    maxHeight: 82,
+    aspectRatio: 0.82,
   },
   pressed: {
     opacity: 0.92,

@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Difficulty, DIFFICULTY_CONFIG, GRID_COLUMNS, GRID_ROWS } from '../constants/cards';
+import { Difficulty, DIFFICULTY_CONFIG, GRID_COLUMNS } from '../constants/cards';
 
 type GameHeaderProps = {
   moves: number;
@@ -14,11 +14,11 @@ type GameHeaderProps = {
 };
 
 function getGridLabel(difficulty: Difficulty, cardCount: number) {
-  const rows = Math.ceil(cardCount / GRID_COLUMNS);
   const config = DIFFICULTY_CONFIG[difficulty];
-  if (config.pairs === 12 && cardCount === 24) {
-    return `Bord ${GRID_COLUMNS}×${GRID_ROWS} — 24 kaarten`;
+  if (difficulty === 'medium' && cardCount === 24) {
+    return `Bord ${config.grid} — 24 kaarten (12 paren)`;
   }
+  const rows = Math.ceil(cardCount / GRID_COLUMNS);
   return `Bord ${GRID_COLUMNS}×${rows} — ${cardCount} kaarten`;
 }
 

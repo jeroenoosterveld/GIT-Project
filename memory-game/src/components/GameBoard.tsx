@@ -24,6 +24,7 @@ export function GameBoard({
 }: GameBoardProps) {
   const boardWidth = Dimensions.get('window').width - BOARD_HORIZONTAL_PADDING * 2;
   const cardWidth = (boardWidth - BOARD_GAP * (GRID_COLUMNS - 1)) / GRID_COLUMNS;
+  const compact = cards.length >= 20;
 
   return (
     <View style={[styles.board, { gap: BOARD_GAP }]}>
@@ -34,6 +35,7 @@ export function GameBoard({
             isFlipped={flippedIds.includes(card.uid)}
             isMatched={matchedIds.includes(card.uid)}
             disabled={isLocked}
+            compact={compact}
             onPress={() => onFlip(card.uid)}
           />
         </View>
@@ -59,7 +61,7 @@ export function DifficultyPicker({ difficulty, onChange }: DifficultyPickerProps
             style={[styles.difficultyButton, isActive && styles.difficultyButtonActive]}
           >
             <Text style={[styles.difficultyText, isActive && styles.difficultyTextActive]}>
-              {DIFFICULTY_CONFIG[level].label}
+              {DIFFICULTY_CONFIG[level].label} · {DIFFICULTY_CONFIG[level].grid}
             </Text>
           </Pressable>
         );
@@ -77,7 +79,7 @@ const styles = StyleSheet.create({
     maxWidth: '100%',
   },
   cardSlot: {
-    minWidth: 72,
+    minWidth: 0,
   },
   difficultyRow: {
     flexDirection: 'row',

@@ -59,11 +59,17 @@ const pwaTags = `
         background-color: #4d5fd6 !important;
         min-height: 100%;
         min-height: -webkit-fill-available;
+        height: 100%;
+        overflow: auto !important;
+        -webkit-overflow-scrolling: touch;
       }
       #root {
         min-height: 100vh;
         min-height: -webkit-fill-available;
+        height: 100%;
         background-color: #4d5fd6;
+        display: flex;
+        flex-direction: column;
       }
       .boot-message {
         color: #ffffff;

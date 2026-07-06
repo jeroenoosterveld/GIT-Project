@@ -31,8 +31,8 @@ export type Difficulty = 'easy' | 'medium';
 
 export const DIFFICULTY_CONFIG: Record<
   Difficulty,
-  { label: string; pairs: number }
+  { label: string; pairs: number; grid: string }
 > = {
-  easy: { label: 'Makkelijk', pairs: 6 },
-  medium: { label: 'Normaal', pairs: 12 },
+  easy: { label: 'Makkelijk', pairs: 6, grid: '4×3' },
+  medium: { label: 'Normaal', pairs: 12, grid: '4×6' },
 };

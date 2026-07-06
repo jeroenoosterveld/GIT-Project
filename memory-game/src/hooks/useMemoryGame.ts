@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { CardTheme, Difficulty, DIFFICULTY_CONFIG } from '../constants/cards';
+import { expandThemesToPairCount } from '../utils/cardThemes';
 
 export type GameCard = {
   uid: string;
@@ -19,8 +20,7 @@ function shuffle<T>(items: T[]): T[] {
 
 function createDeck(difficulty: Difficulty, cardThemes: CardTheme[]): GameCard[] {
   const { pairs } = DIFFICULTY_CONFIG[difficulty];
-  const availablePairs = Math.min(pairs, cardThemes.length);
-  const selected = cardThemes.slice(0, availablePairs);
+  const selected = expandThemesToPairCount(cardThemes, pairs);
 
   return shuffle(
     selected.flatMap((theme) => [
@@ -43,7 +43,7 @@ export function useMemoryGame(cardThemes: CardTheme[]) {
 
   cardThemesRef.current = cardThemes;
 
-  const totalPairs = Math.min(DIFFICULTY_CONFIG[difficulty].pairs, cardThemes.length);
+  const totalPairs = DIFFICULTY_CONFIG[difficulty].pairs;
   const isComplete = matchedIds.length === cards.length && cards.length > 0;
 
   const resetGame = useCallback((nextDifficulty: Difficulty = difficulty) => {

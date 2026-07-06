@@ -109,8 +109,10 @@ export default function App() {
     <>
       <StatusBar style="light" />
       <ScrollView
+        style={isWeb ? styles.webScroll : styles.nativeScroll}
         contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={isWeb}
+        keyboardShouldPersistTaps="handled"
       >
         {isWeb ? <UpdateBanner /> : null}
 
@@ -179,7 +181,7 @@ const styles = StyleSheet.create({
   webRoot: {
     flex: 1,
     backgroundColor: '#4d5fd6',
-    minHeight: '100vh' as unknown as number,
+    height: '100vh' as unknown as number,
     width: '100%',
     paddingTop: 16,
     paddingBottom: 16,
@@ -189,7 +191,13 @@ const styles = StyleSheet.create({
     maxWidth: 520,
     width: '100%',
     alignSelf: 'center',
-    minHeight: '100%',
+    height: '100%',
+  },
+  webScroll: {
+    flex: 1,
+  },
+  nativeScroll: {
+    flex: 1,
   },
   loadingBox: {
     flex: 1,
