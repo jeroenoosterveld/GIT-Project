@@ -1,0 +1,54 @@
+name: Deploy Foto Puzzel
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'index.html'
+      - 'app.js'
+      - 'styles.css'
+      - 'manifest.json'
+      - 'service-worker.js'
+      - 'icons/**'
+      - '.github/workflows/deploy-puzzel.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare puzzle files
+        run: |
+          mkdir -p deploy/puzzel
+          cp index.html app.js styles.css manifest.json service-worker.js deploy/puzzel/
+          cp -r icons deploy/puzzel/
+
+      - name: Add root redirect to puzzle
+        run: |
+          cat > deploy/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="nl">
+          <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="refresh" content="0; url=./puzzel/">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Foto Puzzel</title>
+            <script>location.replace('./puzzel/');</script>
+          </head>
+          <body>
+            <p>Doorverwijzen naar <a href="./puzzel/">Foto Puzzel</a>...</p>
+          </body>
+          </html>
+          EOF
+          touch deploy/.nojekyll
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./deploy
+          keep_files: true

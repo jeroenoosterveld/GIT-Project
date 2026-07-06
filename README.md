@@ -2,6 +2,12 @@
 
 Een offline schuifpuzzel-app voor iPhone Safari. Kies een foto uit je bibliotheek, bepaal het aantal stukjes, en los de puzzel op door te schuiven.
 
+## Live app (permanent)
+
+**https://jeroenoosterveld.github.io/Memory-game/puzzel/**
+
+De app wordt automatisch gepubliceerd via GitHub Pages bij elke wijziging op `master`.
+
 ## Functies
 
 - Foto kiezen uit je fotobibliotheek
