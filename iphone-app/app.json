@@ -1,0 +1,49 @@
+{
+  "expo": {
+    "name": "NAS Notities",
+    "slug": "iphone-app",
+    "version": "1.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#2f3f9f"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jeroenoosterveld.nasnotities",
+      "infoPlist": {
+        "NSLocalNetworkUsageDescription": "De app verbindt met je NAS in het thuisnetwerk om notities op te slaan.",
+        "NSAppTransportSecurity": {
+          "NSAllowsLocalNetworking": true
+        }
+      }
+    },
+    "android": {
+      "package": "com.jeroenoosterveld.nasnotities",
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "name": "NAS Notities",
+      "shortName": "NAS Notities",
+      "description": "Notities opslaan op je NAS, thuis en onderweg",
+      "themeColor": "#5b6cff",
+      "backgroundColor": "#2f3f9f",
+      "display": "standalone",
+      "orientation": "portrait",
+      "lang": "nl"
+    },
+    "plugins": [
+      "expo-secure-store"
+    ]
+  }
+}
