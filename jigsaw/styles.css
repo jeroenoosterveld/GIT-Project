@@ -239,21 +239,20 @@ body {
 
 .group {
   position: absolute;
-  touch-action: none;
+  touch-action: manipulation;
+  cursor: pointer;
   filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.35));
-  transition: filter 0.15s;
+  transition: filter 0.15s, left 0.18s ease, top 0.18s ease, box-shadow 0.15s;
   z-index: 1;
 }
 
-.group.dragging {
-  filter: drop-shadow(0 6px 18px rgba(56, 189, 248, 0.45));
-  z-index: 1000 !important;
-  transition: none;
+.group.selected {
+  z-index: 100 !important;
+  filter: drop-shadow(0 0 0 3px var(--accent)) drop-shadow(0 4px 12px rgba(56, 189, 248, 0.4));
 }
 
-.group.invalid {
-  filter: drop-shadow(0 3px 8px rgba(239, 68, 68, 0.5));
-  opacity: 0.75;
+.group.swapping {
+  transition: left 0.2s ease, top 0.2s ease;
 }
 
 .group.snapping {

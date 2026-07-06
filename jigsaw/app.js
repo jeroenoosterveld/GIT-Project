@@ -15,7 +15,7 @@
     playing: false,
     timerInterval: null,
     startTime: null,
-    drag: null,
+    selectedGroupId: null,
   };
 
   const $ = (sel) => document.querySelector(sel);
@@ -57,10 +57,7 @@
       goToSetup();
     });
 
-    boardEl.addEventListener('pointerdown', onPointerDown);
-    window.addEventListener('pointermove', onPointerMove);
-    window.addEventListener('pointerup', onPointerUp);
-    window.addEventListener('pointercancel', onPointerUp);
+    boardEl.addEventListener('click', onBoardClick);
   }
 
   function onPhotoSelected(e) {
@@ -97,6 +94,7 @@
     setupScreen.classList.add('active');
     gameScreen.classList.remove('active');
     state.playing = false;
+    state.selectedGroupId = null;
     boardEl.innerHTML = '';
     state.groups = [];
     state.grid = [];
@@ -254,21 +252,12 @@
     });
   }
 
-  function canPlaceGroup(group, gridCol, gridRow, ignoreId) {
-    const cells = getGroupCells(group, gridCol, gridRow);
-    for (const { r, c } of cells) {
-      if (r < 0 || r >= state.rows || c < 0 || c >= state.cols) return false;
-      const occupant = state.grid[r][c];
-      if (occupant !== null && occupant !== ignoreId) return false;
-    }
-    return true;
-  }
-
   function renderGroup(group) {
     if (group.el) group.el.remove();
 
     const el = document.createElement('div');
     el.className = 'group';
+    if (group.id === state.selectedGroupId) el.classList.add('selected');
     el.dataset.groupId = group.id;
     el.style.zIndex = group.zIndex;
 
@@ -357,6 +346,7 @@
     });
 
     updateGroupCount();
+    clearSelection();
   }
 
   function areSolveNeighbors(p1, p2) {
@@ -484,32 +474,66 @@
     onWin();
   }
 
-  function pixelToGrid(x, y, group) {
-    let minRelC = 0;
-    let minRelR = 0;
-    const anchorX = x - minRelC * state.cellW;
-    const anchorY = y - minRelR * state.cellH;
-    let col = Math.round(anchorX / state.cellW - 0.5 * (getGroupWidth(group) - 1));
-    let row = Math.round(anchorY / state.cellH - 0.5 * (getGroupHeight(group) - 1));
-
-    col = Math.max(0, Math.min(col, state.cols - getGroupWidth(group)));
-    row = Math.max(0, Math.min(row, state.rows - getGroupHeight(group)));
-    return { col, row };
+  function clearSelection() {
+    if (state.selectedGroupId === null) return;
+    const prev = state.groups.find((g) => g.id === state.selectedGroupId);
+    state.selectedGroupId = null;
+    if (prev && prev.el) prev.el.classList.remove('selected');
   }
 
-  function getGroupWidth(group) {
-    let max = 0;
-    group.pieces.forEach((p) => { max = Math.max(max, p.relCol + 1); });
-    return max;
+  function selectGroup(group) {
+    clearSelection();
+    state.selectedGroupId = group.id;
+    if (group.el) group.el.classList.add('selected');
   }
 
-  function getGroupHeight(group) {
-    let max = 0;
-    group.pieces.forEach((p) => { max = Math.max(max, p.relRow + 1); });
-    return max;
+  function canSwapGroups(g1, g2) {
+    const cells1 = getGroupCells(g1, g2.gridCol, g2.gridRow);
+    const cells2 = getGroupCells(g2, g1.gridCol, g1.gridRow);
+    const all = [...cells1, ...cells2];
+
+    for (const { r, c } of all) {
+      if (r < 0 || r >= state.rows || c < 0 || c >= state.cols) return false;
+    }
+
+    const keys = new Set();
+    for (const { r, c } of cells1) {
+      keys.add(`${r},${c}`);
+    }
+    for (const { r, c } of cells2) {
+      if (keys.has(`${r},${c}`)) return false;
+    }
+
+    return true;
   }
 
-  function onPointerDown(e) {
+  function swapGroups(g1, g2) {
+    if (!canSwapGroups(g1, g2)) return false;
+
+    const c1 = g1.gridCol;
+    const r1 = g1.gridRow;
+    const c2 = g2.gridCol;
+    const r2 = g2.gridRow;
+
+    clearGroupFromGrid(g1);
+    clearGroupFromGrid(g2);
+    placeGroupOnGrid(g1, c2, r2);
+    placeGroupOnGrid(g2, c1, r1);
+
+    g1.el.classList.add('swapping');
+    g2.el.classList.add('swapping');
+    renderGroup(g1);
+    renderGroup(g2);
+    setTimeout(() => {
+      if (g1.el) g1.el.classList.remove('swapping');
+      if (g2.el) g2.el.classList.remove('swapping');
+    }, 200);
+
+    tryMergeAll();
+    return true;
+  }
+
+  function onBoardClick(e) {
     if (!state.playing) return;
     const groupEl = e.target.closest('.group');
     if (!groupEl || !boardEl.contains(groupEl)) return;
@@ -517,62 +541,19 @@
     const group = state.groups.find((g) => g.id === parseInt(groupEl.dataset.groupId, 10));
     if (!group) return;
 
-    group.zIndex = Date.now();
-    groupEl.style.zIndex = group.zIndex;
-    groupEl.classList.add('dragging');
-    groupEl.setPointerCapture(e.pointerId);
-
-    const boardRect = boardEl.getBoundingClientRect();
-    state.drag = {
-      group,
-      pointerId: e.pointerId,
-      originCol: group.gridCol,
-      originRow: group.gridRow,
-      offsetX: e.clientX - boardRect.left - group.gridCol * state.cellW,
-      offsetY: e.clientY - boardRect.top - group.gridRow * state.cellH,
-    };
-
-    clearGroupFromGrid(group);
-    e.preventDefault();
-  }
-
-  function onPointerMove(e) {
-    if (!state.drag || state.drag.pointerId !== e.pointerId) return;
-
-    const boardRect = boardEl.getBoundingClientRect();
-    const group = state.drag.group;
-    const px = e.clientX - boardRect.left - state.drag.offsetX;
-    const py = e.clientY - boardRect.top - state.drag.offsetY;
-    const snapped = pixelToGrid(px, py, group);
-
-    group.gridCol = snapped.col;
-    group.gridRow = snapped.row;
-    group.el.style.left = snapped.col * state.cellW + 'px';
-    group.el.style.top = snapped.row * state.cellH + 'px';
-
-    const valid = canPlaceGroup(group, snapped.col, snapped.row, group.id);
-    group.el.classList.toggle('invalid', !valid);
-  }
-
-  function onPointerUp(e) {
-    if (!state.drag || state.drag.pointerId !== e.pointerId) return;
-
-    const group = state.drag.group;
-    group.el.classList.remove('dragging', 'invalid');
-
-    const col = group.gridCol;
-    const row = group.gridRow;
-
-    if (canPlaceGroup(group, col, row, group.id)) {
-      placeGroupOnGrid(group, col, row);
-      renderGroup(group);
-      tryMergeAll();
-    } else {
-      placeGroupOnGrid(group, state.drag.originCol, state.drag.originRow);
-      renderGroup(group);
+    if (state.selectedGroupId === null) {
+      selectGroup(group);
+      return;
     }
 
-    state.drag = null;
+    if (state.selectedGroupId === group.id) {
+      clearSelection();
+      return;
+    }
+
+    const first = state.groups.find((g) => g.id === state.selectedGroupId);
+    clearSelection();
+    if (first) swapGroups(first, group);
   }
 
   function startTimer() {
