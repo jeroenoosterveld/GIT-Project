@@ -5,13 +5,16 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { GameBoard } from './src/components/GameBoard';
 import { GameHeader } from './src/components/GameHeader';
+import { GridSizePicker } from './src/components/GridSizePicker';
 import { PhotoPickerButton } from './src/components/PhotoPickerButton';
 import { UpdateBanner } from './src/components/UpdateBanner';
 import { WinOverlay } from './src/components/WinOverlay';
 import { CardTheme, DEFAULT_CARD_THEMES } from './src/constants/cards';
+import { MAX_PAIR_COUNT } from './src/constants/grid';
 import { BUILD_VERSION } from './src/constants/buildVersion';
 import { useMemoryGame } from './src/hooks/useMemoryGame';
 import { storedPhotosToThemes, validatePhotoCount } from './src/utils/cardThemes';
+import { loadGridSize, saveGridSize } from './src/utils/gridConfig';
 import { clearStoredPhotos, loadStoredPhotos, saveStoredPhotos, StoredPhoto } from './src/utils/photoStorage';
 import { resizeImageFile } from './src/utils/resizeImage';
 
@@ -23,6 +26,7 @@ export default function App() {
   const [photoError, setPhotoError] = useState<string | null>(null);
   const [isSavingPhotos, setIsSavingPhotos] = useState(false);
   const [photosLoaded, setPhotosLoaded] = useState(!isWeb);
+  const [gridSize, setGridSize] = useState(loadGridSize);
 
   const {
     cards,
@@ -33,7 +37,12 @@ export default function App() {
     stats,
     flipCard,
     resetGame,
-  } = useMemoryGame(cardThemes);
+  } = useMemoryGame(cardThemes, gridSize);
+
+  const handleGridChange = useCallback((nextGridSize: typeof gridSize) => {
+    setGridSize(nextGridSize);
+    saveGridSize(nextGridSize);
+  }, []);
 
   useEffect(() => {
     if (!isWeb) {
@@ -66,7 +75,7 @@ export default function App() {
     setPhotoError(null);
 
     try {
-      const selected = files.slice(0, 12);
+      const selected = files.slice(0, MAX_PAIR_COUNT);
       const stored: StoredPhoto[] = [];
 
       for (let index = 0; index < selected.length; index += 1) {
@@ -120,9 +129,12 @@ export default function App() {
           matchedPairs={stats.matchedPairs}
           totalPairs={stats.totalPairs}
           cardCount={cards.length}
+          gridSize={gridSize}
           usingCustomPhotos={usingCustomPhotos}
           onRestart={() => resetGame()}
         />
+
+        <GridSizePicker gridSize={gridSize} onChange={handleGridChange} />
 
         {isWeb ? (
           <PhotoPickerButton
@@ -135,10 +147,11 @@ export default function App() {
           />
         ) : null}
 
-        <Text style={styles.versionLabel}>Versie: {BUILD_VERSION} · 4×6 · 24 kaarten</Text>
+        <Text style={styles.versionLabel}>Versie: {BUILD_VERSION}</Text>
 
         <GameBoard
           cards={cards}
+          gridSize={gridSize}
           flippedIds={flippedIds}
           matchedIds={matchedIds}
           isLocked={isLocked}

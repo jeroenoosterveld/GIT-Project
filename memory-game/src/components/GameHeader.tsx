@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { GAME_CARDS, GAME_PAIRS, GRID_COLUMNS, GRID_LABEL, GRID_ROWS } from '../constants/cards';
+import { GridSize } from '../constants/grid';
+import { getCardCount, getGridLabel, getPairCount } from '../utils/gridConfig';
 
 type GameHeaderProps = {
   moves: number;
@@ -8,6 +9,7 @@ type GameHeaderProps = {
   matchedPairs: number;
   totalPairs: number;
   cardCount: number;
+  gridSize: GridSize;
   usingCustomPhotos: boolean;
   onRestart: () => void;
 };
@@ -26,10 +28,11 @@ export function GameHeader({
   matchedPairs,
   totalPairs,
   cardCount,
+  gridSize,
   usingCustomPhotos,
   onRestart,
 }: GameHeaderProps) {
-  const gridOk = cardCount === GAME_CARDS;
+  const expectedCards = getCardCount(gridSize);
 
   return (
     <View style={styles.container}>
@@ -38,10 +41,9 @@ export function GameHeader({
         <Text style={styles.subtitle}>
           {usingCustomPhotos ? 'Met jouw foto\'s — volledig offline' : 'Vind alle paartjes — volledig offline'}
         </Text>
-        <Text style={[styles.gridLabel, !gridOk && styles.gridLabelWarning]}>
-          {gridOk
-            ? `Bord ${GRID_LABEL} — ${GAME_CARDS} kaarten (${GAME_PAIRS} paren)`
-            : `Let op: ${cardCount} kaarten — verwacht ${GAME_CARDS} (${GRID_COLUMNS}×${GRID_ROWS})`}
+        <Text style={styles.gridLabel}>
+          Bord {getGridLabel(gridSize)} — {expectedCards} kaarten ({getPairCount(gridSize)} paren)
+          {cardCount !== expectedCards ? ` · actief: ${cardCount}` : ''}
         </Text>
       </View>
 
@@ -89,9 +91,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '800',
     color: '#ffffff',
-  },
-  gridLabelWarning: {
-    color: '#ffd27d',
   },
   statsRow: {
     flexDirection: 'row',

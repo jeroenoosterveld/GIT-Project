@@ -6,11 +6,6 @@ export type CardTheme = {
 };
 
 export const MIN_PHOTOS_REQUIRED = 5;
-export const GRID_COLUMNS = 4;
-export const GRID_ROWS = 6;
-export const GAME_PAIRS = 12;
-export const GAME_CARDS = GAME_PAIRS * 2;
-export const GRID_LABEL = '4×6';
 
 export const DEFAULT_CARD_THEMES: CardTheme[] = [
   { id: 'dog', image: require('../../assets/cards/dog.png') },

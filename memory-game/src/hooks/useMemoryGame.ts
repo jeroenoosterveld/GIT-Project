@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { CardTheme, GAME_PAIRS } from '../constants/cards';
+import { CardTheme } from '../constants/cards';
+import { GridSize } from '../constants/grid';
+import { getPairCount } from '../utils/gridConfig';
 import { expandThemesToPairCount } from '../utils/cardThemes';
 
 export type GameCard = {
@@ -18,8 +20,8 @@ function shuffle<T>(items: T[]): T[] {
   return copy;
 }
 
-function createDeck(cardThemes: CardTheme[]): GameCard[] {
-  const selected = expandThemesToPairCount(cardThemes, GAME_PAIRS);
+function createDeck(cardThemes: CardTheme[], pairCount: number): GameCard[] {
+  const selected = expandThemesToPairCount(cardThemes, pairCount);
 
   return shuffle(
     selected.flatMap((theme) => [
@@ -29,8 +31,9 @@ function createDeck(cardThemes: CardTheme[]): GameCard[] {
   );
 }
 
-export function useMemoryGame(cardThemes: CardTheme[]) {
-  const [cards, setCards] = useState<GameCard[]>(() => createDeck(cardThemes));
+export function useMemoryGame(cardThemes: CardTheme[], gridSize: GridSize) {
+  const pairCount = getPairCount(gridSize);
+  const [cards, setCards] = useState<GameCard[]>(() => createDeck(cardThemes, pairCount));
   const [flippedIds, setFlippedIds] = useState<string[]>([]);
   const [matchedIds, setMatchedIds] = useState<string[]>([]);
   const [moves, setMoves] = useState(0);
@@ -38,10 +41,12 @@ export function useMemoryGame(cardThemes: CardTheme[]) {
   const [isLocked, setIsLocked] = useState(false);
   const flipTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const cardThemesRef = useRef(cardThemes);
+  const gridSizeRef = useRef(gridSize);
 
   cardThemesRef.current = cardThemes;
+  gridSizeRef.current = gridSize;
 
-  const totalPairs = GAME_PAIRS;
+  const totalPairs = pairCount;
   const isComplete = matchedIds.length === cards.length && cards.length > 0;
 
   const resetGame = useCallback(() => {
@@ -50,7 +55,7 @@ export function useMemoryGame(cardThemes: CardTheme[]) {
       flipTimeout.current = null;
     }
 
-    setCards(createDeck(cardThemesRef.current));
+    setCards(createDeck(cardThemesRef.current, getPairCount(gridSizeRef.current)));
     setFlippedIds([]);
     setMatchedIds([]);
     setMoves(0);
@@ -59,13 +64,13 @@ export function useMemoryGame(cardThemes: CardTheme[]) {
   }, []);
 
   useEffect(() => {
-    setCards(createDeck(cardThemesRef.current));
+    setCards(createDeck(cardThemesRef.current, pairCount));
     setFlippedIds([]);
     setMatchedIds([]);
     setMoves(0);
     setSeconds(0);
     setIsLocked(false);
-  }, [cardThemes]);
+  }, [cardThemes, gridSize.columns, gridSize.rows, pairCount]);
 
   useEffect(() => {
     if (matchedIds.length > 0 || flippedIds.length > 0) {

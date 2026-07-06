@@ -1,11 +1,12 @@
 import { Dimensions, StyleSheet, View } from 'react-native';
 
-import { GRID_COLUMNS } from '../constants/cards';
+import { GridSize } from '../constants/grid';
 import { GameCard } from '../hooks/useMemoryGame';
 import { MemoryCard } from './MemoryCard';
 
 type GameBoardProps = {
   cards: GameCard[];
+  gridSize: GridSize;
   flippedIds: string[];
   matchedIds: string[];
   isLocked: boolean;
@@ -15,16 +16,27 @@ type GameBoardProps = {
 const BOARD_GAP = 10;
 const BOARD_HORIZONTAL_PADDING = 18;
 
+function getCardSizeMode(cardCount: number) {
+  if (cardCount >= 30) {
+    return 'extraCompact' as const;
+  }
+  if (cardCount >= 16) {
+    return 'compact' as const;
+  }
+  return 'normal' as const;
+}
+
 export function GameBoard({
   cards,
+  gridSize,
   flippedIds,
   matchedIds,
   isLocked,
   onFlip,
 }: GameBoardProps) {
   const boardWidth = Dimensions.get('window').width - BOARD_HORIZONTAL_PADDING * 2;
-  const cardWidth = (boardWidth - BOARD_GAP * (GRID_COLUMNS - 1)) / GRID_COLUMNS;
-  const compact = cards.length >= 20;
+  const cardWidth = (boardWidth - BOARD_GAP * (gridSize.columns - 1)) / gridSize.columns;
+  const sizeMode = getCardSizeMode(cards.length);
 
   return (
     <View style={[styles.board, { gap: BOARD_GAP }]}>
@@ -35,7 +47,7 @@ export function GameBoard({
             isFlipped={flippedIds.includes(card.uid)}
             isMatched={matchedIds.includes(card.uid)}
             disabled={isLocked}
-            compact={compact}
+            sizeMode={sizeMode}
             onPress={() => onFlip(card.uid)}
           />
         </View>

@@ -18,7 +18,7 @@ type MemoryCardProps = {
   isMatched: boolean;
   onPress: () => void;
   disabled: boolean;
-  compact?: boolean;
+  sizeMode?: 'normal' | 'compact' | 'extraCompact';
 };
 
 const isWeb = Platform.OS === 'web';
@@ -29,7 +29,7 @@ export function MemoryCard({
   isMatched,
   onPress,
   disabled,
-  compact = false,
+  sizeMode = 'normal',
 }: MemoryCardProps) {
   const showFront = isFlipped || isMatched;
   const flipAnim = useRef(new Animated.Value(showFront ? 1 : 0)).current;
@@ -54,7 +54,8 @@ export function MemoryCard({
         disabled={disabled || showFront}
         style={({ pressed }) => [
           styles.pressable,
-          compact && styles.pressableCompact,
+          sizeMode === 'compact' && styles.pressableCompact,
+          sizeMode === 'extraCompact' && styles.pressableExtraCompact,
           pressed && styles.pressed,
         ]}
       >
@@ -122,6 +123,11 @@ const styles = StyleSheet.create({
     minHeight: 58,
     maxHeight: 82,
     aspectRatio: 0.82,
+  },
+  pressableExtraCompact: {
+    minHeight: 46,
+    maxHeight: 68,
+    aspectRatio: 0.85,
   },
   pressed: {
     opacity: 0.92,

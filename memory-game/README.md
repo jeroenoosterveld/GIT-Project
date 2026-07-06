@@ -5,7 +5,7 @@ Een memory-spelletje voor iPhone gebouwd met **Expo** en **React Native**. Alle 
 ## Spel
 
 - Draai kaarten om en vind bijpassende paartjes
-- Vast bord: **4×6** met **24 kaarten** (12 paren)
+- Zelf bordgrootte kiezen: **1–6 kolommen** × **2–12 rijen**
 - Timer, zettenteller en voortgang
 - Animaties bij het omdraaien van kaarten
 - Werkt volledig offline
