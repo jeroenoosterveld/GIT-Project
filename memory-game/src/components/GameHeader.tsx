@@ -1,13 +1,26 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { Difficulty, DIFFICULTY_CONFIG, GRID_COLUMNS, GRID_ROWS } from '../constants/cards';
+
 type GameHeaderProps = {
   moves: number;
   seconds: number;
   matchedPairs: number;
   totalPairs: number;
+  cardCount: number;
+  difficulty: Difficulty;
   usingCustomPhotos: boolean;
   onRestart: () => void;
 };
+
+function getGridLabel(difficulty: Difficulty, cardCount: number) {
+  const rows = Math.ceil(cardCount / GRID_COLUMNS);
+  const config = DIFFICULTY_CONFIG[difficulty];
+  if (config.pairs === 12 && cardCount === 24) {
+    return `Bord ${GRID_COLUMNS}×${GRID_ROWS} — 24 kaarten`;
+  }
+  return `Bord ${GRID_COLUMNS}×${rows} — ${cardCount} kaarten`;
+}
 
 function formatTime(totalSeconds: number) {
   const minutes = Math.floor(totalSeconds / 60)
@@ -22,6 +35,8 @@ export function GameHeader({
   seconds,
   matchedPairs,
   totalPairs,
+  cardCount,
+  difficulty,
   usingCustomPhotos,
   onRestart,
 }: GameHeaderProps) {
@@ -32,6 +47,7 @@ export function GameHeader({
         <Text style={styles.subtitle}>
           {usingCustomPhotos ? 'Met jouw foto\'s — volledig offline' : 'Vind alle paartjes — volledig offline'}
         </Text>
+        <Text style={styles.gridLabel}>{getGridLabel(difficulty, cardCount)}</Text>
       </View>
 
       <View style={styles.statsRow}>
@@ -72,6 +88,12 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontSize: 15,
     color: '#c9d4ff',
+  },
+  gridLabel: {
+    marginTop: 6,
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#ffffff',
   },
   statsRow: {
     flexDirection: 'row',

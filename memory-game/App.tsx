@@ -116,6 +116,8 @@ export default function App() {
           seconds={stats.seconds}
           matchedPairs={stats.matchedPairs}
           totalPairs={stats.totalPairs}
+          cardCount={cards.length}
+          difficulty={difficulty}
           usingCustomPhotos={usingCustomPhotos}
           onRestart={() => resetGame()}
         />
