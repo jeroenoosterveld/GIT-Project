@@ -241,6 +241,7 @@ body {
   position: absolute;
   touch-action: manipulation;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.35));
   transition: filter 0.15s, left 0.18s ease, top 0.18s ease, box-shadow 0.15s;
   z-index: 1;
@@ -255,6 +256,16 @@ body {
   transition: left 0.2s ease, top 0.2s ease;
 }
 
+.group.swap-fail {
+  animation: shake 0.28s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
 .group.snapping {
   transition: left 0.18s ease, top 0.18s ease;
 }
@@ -263,6 +274,7 @@ body {
   position: absolute;
   overflow: hidden;
   background-color: #1e293b;
+  pointer-events: none;
 }
 
 .piece img {
