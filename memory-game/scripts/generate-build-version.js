@@ -16,7 +16,8 @@ function gitShortSha() {
   }
 }
 
-const timestamp = new Date().toISOString().slice(0, 16).replace('T', '-');
+const now = new Date();
+const timestamp = now.toISOString().slice(0, 19).replace('T', '-').replace(/:/g, '');
 const BUILD_VERSION = `${timestamp}-${gitShortSha()}`;
 
 const tsContent = `// Auto-generated before each web build — do not edit manually
