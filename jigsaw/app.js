@@ -16,6 +16,7 @@
     timerInterval: null,
     startTime: null,
     selectedGroupId: null,
+    pointerStart: null,
   };
 
   const $ = (sel) => document.querySelector(sel);
@@ -57,7 +58,9 @@
       goToSetup();
     });
 
-    boardEl.addEventListener('click', onBoardClick);
+    boardEl.addEventListener('pointerdown', onPointerDown);
+    boardEl.addEventListener('pointerup', onPointerUp);
+    boardEl.addEventListener('pointercancel', onPointerCancel);
   }
 
   function onPhotoSelected(e) {
@@ -474,6 +477,28 @@
     onWin();
   }
 
+  function getGroupAtCell(r, c) {
+    const id = state.grid[r]?.[c];
+    if (id == null) return null;
+    return state.groups.find((g) => g.id === id) || null;
+  }
+
+  function getCellFromPoint(clientX, clientY) {
+    const rect = boardEl.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    const c = Math.floor(x / state.cellW);
+    const r = Math.floor(y / state.cellH);
+    if (r < 0 || r >= state.rows || c < 0 || c >= state.cols) return null;
+    return { r, c };
+  }
+
+  function flashGroup(group, className) {
+    if (!group.el) return;
+    group.el.classList.add(className);
+    setTimeout(() => group.el && group.el.classList.remove(className), 280);
+  }
+
   function clearSelection() {
     if (state.selectedGroupId === null) return;
     const prev = state.groups.find((g) => g.id === state.selectedGroupId);
@@ -508,22 +533,30 @@
   }
 
   function swapGroups(g1, g2) {
-    if (!canSwapGroups(g1, g2)) return false;
+    if (g1.id === g2.id) return false;
 
     const c1 = g1.gridCol;
     const r1 = g1.gridRow;
     const c2 = g2.gridCol;
     const r2 = g2.gridRow;
 
+    const singleSwap = g1.pieces.length === 1 && g2.pieces.length === 1;
+    if (!singleSwap && !canSwapGroups(g1, g2)) {
+      flashGroup(g1, 'swap-fail');
+      flashGroup(g2, 'swap-fail');
+      return false;
+    }
+
     clearGroupFromGrid(g1);
     clearGroupFromGrid(g2);
     placeGroupOnGrid(g1, c2, r2);
     placeGroupOnGrid(g2, c1, r1);
 
-    g1.el.classList.add('swapping');
-    g2.el.classList.add('swapping');
     renderGroup(g1);
     renderGroup(g2);
+
+    g1.el.classList.add('swapping');
+    g2.el.classList.add('swapping');
     setTimeout(() => {
       if (g1.el) g1.el.classList.remove('swapping');
       if (g2.el) g2.el.classList.remove('swapping');
@@ -533,13 +566,9 @@
     return true;
   }
 
-  function onBoardClick(e) {
+  function handleGroupTap(group, e) {
     if (!state.playing) return;
-    const groupEl = e.target.closest('.group');
-    if (!groupEl || !boardEl.contains(groupEl)) return;
-
-    const group = state.groups.find((g) => g.id === parseInt(groupEl.dataset.groupId, 10));
-    if (!group) return;
+    if (state.pointerStart && state.pointerStart.moved) return;
 
     if (state.selectedGroupId === null) {
       selectGroup(group);
@@ -554,6 +583,39 @@
     const first = state.groups.find((g) => g.id === state.selectedGroupId);
     clearSelection();
     if (first) swapGroups(first, group);
+  }
+
+  function onPointerDown(e) {
+    if (!state.playing) return;
+    if (!boardEl.contains(e.target)) return;
+    state.pointerStart = {
+      id: e.pointerId,
+      x: e.clientX,
+      y: e.clientY,
+      moved: false,
+    };
+  }
+
+  function onPointerUp(e) {
+    if (!state.playing || !state.pointerStart || state.pointerStart.id !== e.pointerId) return;
+
+    const dx = e.clientX - state.pointerStart.x;
+    const dy = e.clientY - state.pointerStart.y;
+    const moved = dx * dx + dy * dy > 64;
+    state.pointerStart.moved = moved;
+    state.pointerStart = null;
+
+    if (moved) return;
+
+    const cell = getCellFromPoint(e.clientX, e.clientY);
+    if (!cell) return;
+
+    const group = getGroupAtCell(cell.r, cell.c);
+    if (group) handleGroupTap(group, e);
+  }
+
+  function onPointerCancel() {
+    state.pointerStart = null;
   }
 
   function startTimer() {
