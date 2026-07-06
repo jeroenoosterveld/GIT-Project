@@ -62,7 +62,7 @@ export function PhotoPickerButton({
       <Text style={styles.hint}>
         {usingCustomPhotos
           ? `${photoCount} foto's opgeslagen op je iPhone — volledig offline`
-          : 'Kies minimaal 5 foto\'s uit je fotobibliotheek (10 voor Normaal)'}
+          : 'Kies minimaal 6 foto\'s (12 voor Normaal 4×6)'}
       </Text>
 
       {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}

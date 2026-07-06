@@ -7,7 +7,7 @@ export type CardTheme = {
 
 export const MIN_PHOTOS_REQUIRED = 5;
 export const GRID_COLUMNS = 4;
-export const GRID_ROWS = 5;
+export const GRID_ROWS = 6;
 
 export const DEFAULT_CARD_THEMES: CardTheme[] = [
   { id: 'dog', image: require('../../assets/cards/dog.png') },
@@ -20,6 +20,8 @@ export const DEFAULT_CARD_THEMES: CardTheme[] = [
   { id: 'tiger', image: require('../../assets/cards/tiger.png') },
   { id: 'rabbit', image: require('../../assets/cards/rabbit.png') },
   { id: 'bear', image: require('../../assets/cards/bear.png') },
+  { id: 'unicorn', image: require('../../assets/cards/unicorn.png') },
+  { id: 'whale', image: require('../../assets/cards/whale.png') },
 ];
 
 /** @deprecated use DEFAULT_CARD_THEMES */
@@ -31,6 +33,6 @@ export const DIFFICULTY_CONFIG: Record<
   Difficulty,
   { label: string; pairs: number }
 > = {
-  easy: { label: 'Makkelijk', pairs: 5 },
-  medium: { label: 'Normaal', pairs: 10 },
+  easy: { label: 'Makkelijk', pairs: 6 },
+  medium: { label: 'Normaal', pairs: 12 },
 };

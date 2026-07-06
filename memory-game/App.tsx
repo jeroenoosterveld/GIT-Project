@@ -43,7 +43,7 @@ export default function App() {
 
     loadStoredPhotos()
       .then((photos) => {
-        if (photos.length >= 5) {
+        if (photos.length >= 6) {
           setCardThemes(storedPhotosToThemes(photos));
           setUsingCustomPhotos(true);
         }
@@ -67,7 +67,7 @@ export default function App() {
     setPhotoError(null);
 
     try {
-      const selected = files.slice(0, 10);
+      const selected = files.slice(0, 12);
       const stored: StoredPhoto[] = [];
 
       for (let index = 0; index < selected.length; index += 1) {
