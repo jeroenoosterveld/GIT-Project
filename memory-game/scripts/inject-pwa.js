@@ -30,73 +30,22 @@ fs.copyFileSync(iconSource, iconTarget);
 fs.writeFileSync(path.join(outputDir, 'version.txt'), BUILD_VERSION);
 
 if (fs.existsSync(manifestSource)) {
-  let manifest = fs.readFileSync(manifestSource, 'utf8');
-  manifest = manifest.replace(
-    `"start_url": "${BASE_PATH}/"`,
-    `"start_url": "${BASE_PATH}/${cacheQuery}"`,
-  );
-  fs.writeFileSync(path.join(outputDir, 'manifest.webmanifest'), manifest);
+  fs.copyFileSync(manifestSource, path.join(outputDir, 'manifest.webmanifest'));
 }
 
-const cacheBustScript = `
+const headScript = `
     <script>
       (function () {
-        var BUILD_VERSION = '${BUILD_VERSION}';
-        var BASE_PATH = '${BASE_PATH}';
-        var url = new URL(window.location.href);
-
-        function clearCaches() {
-          if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(function (regs) {
-              regs.forEach(function (reg) { reg.unregister(); });
-            });
-          }
-          if (window.caches) {
-            caches.keys().then(function (keys) {
-              keys.forEach(function (key) { caches.delete(key); });
-            });
-          }
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function (regs) {
+            regs.forEach(function (reg) { reg.unregister(); });
+          });
         }
-
-        if (url.searchParams.get('v') !== BUILD_VERSION) {
-          clearCaches();
-          url.searchParams.set('v', BUILD_VERSION);
-          window.location.replace(url.toString());
-          return;
-        }
-
-        var storedVersion = localStorage.getItem('memory-game-version');
-        if (storedVersion && storedVersion !== BUILD_VERSION) {
-          clearCaches();
-          localStorage.setItem('memory-game-version', BUILD_VERSION);
-          url.searchParams.set('v', BUILD_VERSION);
-          window.location.replace(url.toString());
-          return;
-        }
-
-        localStorage.setItem('memory-game-version', BUILD_VERSION);
-        clearCaches();
-
-        fetch(BASE_PATH + '/version.txt?_=' + Date.now(), { cache: 'no-store' })
-          .then(function (response) { return response.text(); })
-          .then(function (latest) {
-            var remoteVersion = latest.trim();
-            if (remoteVersion && remoteVersion !== BUILD_VERSION) {
-              localStorage.setItem('memory-game-version', remoteVersion);
-              var nextUrl = new URL(window.location.href);
-              nextUrl.searchParams.set('v', remoteVersion);
-              window.location.replace(nextUrl.toString());
-            }
-          })
-          .catch(function () {});
       })();
     </script>
 `;
 
 const pwaTags = `
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
     <meta name="build-version" content="${BUILD_VERSION}" />
     <link rel="manifest" href="${withCacheBust(`${BASE_PATH}/manifest.webmanifest`)}" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -136,9 +85,9 @@ html = html.replace(
   /(\/_expo\/static\/js\/web\/index-[a-f0-9]+\.js)(\?v=[^"]*)?"/,
   `$1?v=${BUILD_VERSION}"`,
 );
-html = html.replace('<head>', `<head>${cacheBustScript}`);
+html = html.replace('<head>', `<head>${headScript}`);
 html = html.replace('</head>', `${pwaTags}  </head>`);
 html = html.replace('<div id="root"></div>', `<div id="root">${bootMessage}</div>`);
 
 fs.writeFileSync(indexPath, html);
-console.log(`Cache busting injected (${BUILD_VERSION})`);
+console.log(`PWA injected (${BUILD_VERSION})`);

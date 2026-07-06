@@ -1,34 +1,29 @@
 # Deployment (iPhone / GitHub Pages)
 
-Na **elke wijziging**:
-
 ```bash
 cd memory-game
 npm run deploy:pages
 ```
 
-Dit gebeurt **automatisch** bij elke push via GitHub Actions.
+## Updates zonder Safari-cache wissen
 
-## Cache-busting (altijd actief)
+Gebruikers hoeven **niet** "Wis geschiedenis en websitedata" te gebruiken.
 
-Elke build forceert een verse versie op iPhone:
+1. App opent → checkt `version.txt` op de server (altijd vers, `cache: no-store`)
+2. Nieuwe versie? → banner **"Nieuwe versie beschikbaar — Bijwerken"**
+3. Eén tik → app laadt de nieuwe versie
+4. Offline spelen blijft werken — cache wordt niet gewist bij normaal gebruik
 
-1. **Unieke versiestempel** — datum/tijd + git-commit (elke deploy anders)
-2. **URL redirect** — pagina zonder `?v=` wordt automatisch doorgestuurd
-3. **localStorage-check** — oude versie → cache wissen + herladen
-4. **version.txt-check** — vergelijkt met server (`cache: no-store`)
-5. **Query params** — JS, manifest, icoon krijgen allemaal `?v=...`
-6. **Service workers** — altijd uitgeschakeld en gewist
-7. **Meta no-cache** — Safari krijgt geen-cache headers
+## Wat elke deploy doet
 
-Gebruikers hoeven **niet handmatig** cache te wissen — de app doet dit zelf bij openen.
+- Unieke versiestempel in `version.txt` en in de app
+- `?v=` op JavaScript-bundle (alleen bij update)
+- Service workers uitgeschakeld (die veroorzaken cache-problemen)
 
-## Live URL
+## URL
 
 ```
 https://jeroenoosterveld.github.io/Memory-game/
 ```
 
-De `?v=` parameter wordt **automatisch** toegevoegd.
-
-Versienummer staat onderaan in de app én in `version.txt` op de server.
+Geen speciale link nodig — de app checkt zelf op updates.

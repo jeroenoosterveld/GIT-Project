@@ -70,7 +70,7 @@ Je hebt nu een **Memory**-icoon op je homescherm.
 ## Je eigen foto's gebruiken
 
 1. Tik op **Mijn foto's kiezen**
-2. Selecteer **minimaal 6 foto's** uit je fotobibliotheek (8 is ideaal voor Normaal)
+2. Selecteer **minimaal 6 foto's** uit je fotobibliotheek (12 is ideaal voor Normaal)
 3. De foto's worden **op je iPhone opgeslagen** — geen upload naar een server
 4. Tik op **Standaard plaatjes** om terug te gaan naar de dieren
 
@@ -85,10 +85,9 @@ Je hebt nu een **Memory**-icoon op je homescherm.
 → Wacht even en vernieuw de pagina. De branch is al aangemaakt.
 
 **De link werkt niet / wit scherm**
-→ Gebruik de **nieuwe** URL (niet de oude `/GIT-Project/` link).
-→ Verwijder het oude beginscherm-icoon.
-→ Instellingen → Safari → **Wis geschiedenis en websitedata**.
-→ Open opnieuw: **https://jeroenoosterveld.github.io/Memory-game/**
+→ Open: **https://jeroenoosterveld.github.io/Memory-game/**
+→ Tik op **Bijwerken** als je een update-banner ziet
+→ Je hoeft **geen** Safari-geschiedenis te wissen
 
 **Ik zie alleen GitHub Actions**
 → Scroll bij Source omhoog — kies **Deploy from a branch** in plaats van GitHub Actions.

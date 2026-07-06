@@ -6,6 +6,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { DifficultyPicker, GameBoard } from './src/components/GameBoard';
 import { GameHeader } from './src/components/GameHeader';
 import { PhotoPickerButton } from './src/components/PhotoPickerButton';
+import { UpdateBanner } from './src/components/UpdateBanner';
 import { WinOverlay } from './src/components/WinOverlay';
 import { CardTheme, DEFAULT_CARD_THEMES } from './src/constants/cards';
 import { BUILD_VERSION } from './src/constants/buildVersion';
@@ -111,6 +112,8 @@ export default function App() {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
+        {isWeb ? <UpdateBanner /> : null}
+
         <GameHeader
           moves={stats.moves}
           seconds={stats.seconds}
