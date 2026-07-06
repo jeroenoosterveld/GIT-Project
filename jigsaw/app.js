@@ -1,16 +1,15 @@
 (function () {
   'use strict';
 
-  const SNAP = 28;
-
   const state = {
     image: null,
     rows: 4,
     cols: 4,
-    pieceW: 0,
-    pieceH: 0,
+    cellW: 0,
+    cellH: 0,
     boardW: 0,
     boardH: 0,
+    grid: [],
     groups: [],
     nextGroupId: 1,
     playing: false,
@@ -100,6 +99,7 @@
     state.playing = false;
     boardEl.innerHTML = '';
     state.groups = [];
+    state.grid = [];
   }
 
   function startGame() {
@@ -109,33 +109,30 @@
     winOverlay.hidden = true;
     requestAnimationFrame(() => {
       buildPuzzle();
-      scatterGroups();
+      scatterGroups(false);
       state.playing = true;
       startTimer();
     });
+  }
+
+  function emptyGrid() {
+    state.grid = Array.from({ length: state.rows }, () => Array(state.cols).fill(null));
   }
 
   function buildPuzzle() {
     boardEl.innerHTML = '';
     state.groups = [];
     state.nextGroupId = 1;
+    emptyGrid();
 
     const rect = boardEl.getBoundingClientRect();
     state.boardW = rect.width;
     state.boardH = rect.height;
+    state.cellW = state.boardW / state.cols;
+    state.cellH = state.boardH / state.rows;
 
-    const aspect = state.image.width / state.image.height;
-    let imgW, imgH;
-    if (aspect >= 1) {
-      imgW = state.boardW * 0.88;
-      imgH = imgW / aspect;
-    } else {
-      imgH = state.boardH * 0.88;
-      imgW = imgH * aspect;
-    }
-
-    state.pieceW = imgW / state.cols;
-    state.pieceH = imgH / state.rows;
+    boardEl.style.setProperty('--cols', state.cols);
+    boardEl.style.setProperty('--rows', state.rows);
 
     const ctx = sliceCanvas.getContext('2d');
     sliceCanvas.width = state.image.width;
@@ -161,10 +158,10 @@
           id,
           row,
           col,
-          localX: 0,
-          localY: 0,
-          width: state.pieceW,
-          height: state.pieceH,
+          relCol: 0,
+          relRow: 0,
+          width: state.cellW,
+          height: state.cellH,
           imgSrc: tile.toDataURL('image/jpeg', 0.92),
           connTop: false,
           connRight: false,
@@ -175,36 +172,96 @@
         createGroup([piece]);
       }
     }
+
+    renderGridOverlay();
+  }
+
+  function renderGridOverlay() {
+    let overlay = boardEl.querySelector('.grid-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.className = 'grid-overlay';
+      boardEl.appendChild(overlay);
+    }
+    overlay.innerHTML = '';
+    for (let r = 0; r < state.rows; r++) {
+      for (let c = 0; c < state.cols; c++) {
+        const cell = document.createElement('div');
+        cell.className = 'grid-cell';
+        cell.style.left = c * state.cellW + 'px';
+        cell.style.top = r * state.cellH + 'px';
+        cell.style.width = state.cellW + 'px';
+        cell.style.height = state.cellH + 'px';
+        overlay.appendChild(cell);
+      }
+    }
   }
 
   function createGroup(pieces) {
     const group = {
       id: state.nextGroupId++,
-      x: 0,
-      y: 0,
+      gridCol: 0,
+      gridRow: 0,
       pieces,
       el: null,
       zIndex: state.nextGroupId,
     };
-    layoutGroup(group);
+    normalizeGroupPieces(group);
     renderGroup(group);
     state.groups.push(group);
     return group;
   }
 
-  function layoutGroup(group) {
-    if (!group.pieces.length) return { minX: 0, minY: 0 };
-    let minX = Infinity;
-    let minY = Infinity;
+  function normalizeGroupPieces(group) {
+    if (!group.pieces.length) return;
+    let minCol = Infinity;
+    let minRow = Infinity;
     group.pieces.forEach((p) => {
-      minX = Math.min(minX, p.localX);
-      minY = Math.min(minY, p.localY);
+      minCol = Math.min(minCol, p.col);
+      minRow = Math.min(minRow, p.row);
     });
     group.pieces.forEach((p) => {
-      p.localX -= minX;
-      p.localY -= minY;
+      p.relCol = p.col - minCol;
+      p.relRow = p.row - minRow;
     });
-    return { minX, minY };
+  }
+
+  function getGroupCells(group, gridCol, gridRow) {
+    return group.pieces.map((p) => ({
+      r: gridRow + p.relRow,
+      c: gridCol + p.relCol,
+    }));
+  }
+
+  function clearGroupFromGrid(group) {
+    for (let r = 0; r < state.rows; r++) {
+      for (let c = 0; c < state.cols; c++) {
+        if (state.grid[r][c] === group.id) {
+          state.grid[r][c] = null;
+        }
+      }
+    }
+  }
+
+  function placeGroupOnGrid(group, gridCol, gridRow) {
+    clearGroupFromGrid(group);
+    group.gridCol = gridCol;
+    group.gridRow = gridRow;
+    getGroupCells(group, gridCol, gridRow).forEach(({ r, c }) => {
+      if (r >= 0 && r < state.rows && c >= 0 && c < state.cols) {
+        state.grid[r][c] = group.id;
+      }
+    });
+  }
+
+  function canPlaceGroup(group, gridCol, gridRow, ignoreId) {
+    const cells = getGroupCells(group, gridCol, gridRow);
+    for (const { r, c } of cells) {
+      if (r < 0 || r >= state.rows || c < 0 || c >= state.cols) return false;
+      const occupant = state.grid[r][c];
+      if (occupant !== null && occupant !== ignoreId) return false;
+    }
+    return true;
   }
 
   function renderGroup(group) {
@@ -217,24 +274,22 @@
 
     group.pieces.forEach((p) => {
       const pieceEl = document.createElement('div');
-      pieceEl.className = 'piece';
-      pieceEl.style.left = p.localX + 'px';
-      pieceEl.style.top = p.localY + 'px';
-      pieceEl.style.width = p.width + 'px';
-      pieceEl.style.height = p.height + 'px';
-      pieceEl.dataset.pieceId = p.id;
-
-      const cls = [];
+      const cls = ['piece'];
       if (p.connTop) cls.push('conn-top');
       if (p.connRight) cls.push('conn-right');
       if (p.connBottom) cls.push('conn-bottom');
       if (p.connLeft) cls.push('conn-left');
-      pieceEl.className = 'piece ' + cls.join(' ');
+      pieceEl.className = cls.join(' ');
+
+      pieceEl.style.left = p.relCol * state.cellW + 'px';
+      pieceEl.style.top = p.relRow * state.cellH + 'px';
+      pieceEl.style.width = state.cellW + 'px';
+      pieceEl.style.height = state.cellH + 'px';
 
       const img = document.createElement('img');
       img.src = p.imgSrc;
-      img.style.width = p.width + 'px';
-      img.style.height = p.height + 'px';
+      img.style.width = state.cellW + 'px';
+      img.style.height = state.cellH + 'px';
       img.draggable = false;
       pieceEl.appendChild(img);
 
@@ -247,19 +302,27 @@
       el.appendChild(pieceEl);
     });
 
-    let maxX = 0;
-    let maxY = 0;
+    let maxC = 0;
+    let maxR = 0;
     group.pieces.forEach((p) => {
-      maxX = Math.max(maxX, p.localX + p.width);
-      maxY = Math.max(maxY, p.localY + p.height);
+      maxC = Math.max(maxC, p.relCol + 1);
+      maxR = Math.max(maxR, p.relRow + 1);
     });
-    el.style.width = maxX + 'px';
-    el.style.height = maxY + 'px';
-    el.style.left = group.x + 'px';
-    el.style.top = group.y + 'px';
+    el.style.width = maxC * state.cellW + 'px';
+    el.style.height = maxR * state.cellH + 'px';
+    el.style.left = group.gridCol * state.cellW + 'px';
+    el.style.top = group.gridRow * state.cellH + 'px';
 
     boardEl.appendChild(el);
     group.el = el;
+  }
+
+  function shuffleArray(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
   }
 
   function scatterGroups(reshuffle) {
@@ -269,118 +332,104 @@
       state.groups.forEach((g) => g.el && g.el.remove());
       state.groups = [];
       state.nextGroupId = 1;
+      emptyGrid();
       allPieces.forEach((p) => {
-        p.localX = 0;
-        p.localY = 0;
+        p.relCol = 0;
+        p.relRow = 0;
         p.connTop = p.connRight = p.connBottom = p.connLeft = false;
         createGroup([p]);
       });
     }
 
-    const padding = 12;
-    state.groups.forEach((group) => {
-      let maxX = 0;
-      let maxY = 0;
-      group.pieces.forEach((p) => {
-        maxX = Math.max(maxX, p.localX + p.width);
-        maxY = Math.max(maxY, p.localY + p.height);
-      });
+    const slots = [];
+    for (let r = 0; r < state.rows; r++) {
+      for (let c = 0; c < state.cols; c++) {
+        slots.push({ r, c });
+      }
+    }
+    shuffleArray(slots);
 
-      group.x = padding + Math.random() * Math.max(0, state.boardW - maxX - padding * 2);
-      group.y = padding + Math.random() * Math.max(0, state.boardH - maxY - padding * 2);
-      group.el.style.left = group.x + 'px';
-      group.el.style.top = group.y + 'px';
+    emptyGrid();
+    state.groups.forEach((group, i) => {
+      const slot = slots[i];
+      placeGroupOnGrid(group, slot.c, slot.r);
+      renderGroup(group);
     });
 
     updateGroupCount();
   }
 
-  function pieceWorld(piece, group) {
-    return { x: group.x + piece.localX, y: group.y + piece.localY };
-  }
-
-  function solvedOffset(p1, p2) {
-    return {
-      dx: (p1.col - p2.col) * state.pieceW,
-      dy: (p1.row - p2.row) * state.pieceH,
-    };
-  }
-
-  function areNeighbors(p1, p2) {
+  function areSolveNeighbors(p1, p2) {
     const dc = Math.abs(p1.col - p2.col);
     const dr = Math.abs(p1.row - p2.row);
     return (dc === 1 && dr === 0) || (dc === 0 && dr === 1);
   }
 
-  function trySnap() {
-    let merged = false;
-
-    for (let i = 0; i < state.groups.length; i++) {
-      for (let j = i + 1; j < state.groups.length; j++) {
-        const g1 = state.groups[i];
-        const g2 = state.groups[j];
-        if (!g1.el || !g2.el) continue;
-
-        const snap = findSnap(g1, g2);
-        if (snap) {
-          mergeGroups(g1, g2, snap.dx, snap.dy);
-          merged = true;
-          break;
+  function tryMergeAll() {
+    let merged = true;
+    while (merged) {
+      merged = false;
+      for (let i = 0; i < state.groups.length; i++) {
+        for (let j = i + 1; j < state.groups.length; j++) {
+          const g1 = state.groups[i];
+          const g2 = state.groups[j];
+          if (!g1 || !g2) continue;
+          if (findGridMerge(g1, g2)) {
+            merged = true;
+            break;
+          }
         }
+        if (merged) break;
       }
-      if (merged) break;
     }
-
-    if (merged) {
-      updateConnections();
-      updateGroupCount();
-      checkWin();
-    }
+    updateConnections();
+    updateGroupCount();
+    checkWin();
   }
 
-  function findSnap(g1, g2) {
+  function findGridMerge(g1, g2) {
     for (const p1 of g1.pieces) {
       for (const p2 of g2.pieces) {
-        if (!areNeighbors(p1, p2)) continue;
+        if (!areSolveNeighbors(p1, p2)) continue;
 
-        const w1 = pieceWorld(p1, g1);
-        const w2 = pieceWorld(p2, g2);
-        const off = solvedOffset(p1, p2);
-        const targetX = w1.x - off.dx;
-        const targetY = w1.y - off.dy;
-        const dx = targetX - w2.x;
-        const dy = targetY - w2.y;
+        const r1 = g1.gridRow + p1.relRow;
+        const c1 = g1.gridCol + p1.relCol;
+        const r2 = g2.gridRow + p2.relRow;
+        const c2 = g2.gridCol + p2.relCol;
 
-        if (Math.abs(dx) <= SNAP && Math.abs(dy) <= SNAP) {
-          return { dx, dy, p1, p2 };
+        const dr = p1.row - p2.row;
+        const dc = p1.col - p2.col;
+
+        if (r1 - r2 === dr && c1 - c2 === dc) {
+          mergeGroups(g1, g2);
+          return true;
         }
       }
     }
-    return null;
+    return false;
   }
 
-  function mergeGroups(target, source, dx, dy) {
-    source.x += dx;
-    source.y += dy;
+  function mergeGroups(target, source) {
+    const sourceCol = source.gridCol;
+    const sourceRow = source.gridRow;
 
     source.pieces.forEach((p) => {
-      p.localX = source.x + p.localX - target.x;
-      p.localY = source.y + p.localY - target.y;
+      p.relCol = sourceCol + p.relCol - target.gridCol;
+      p.relRow = sourceRow + p.relRow - target.gridRow;
       target.pieces.push(p);
     });
 
+    clearGroupFromGrid(source);
     source.el.remove();
     state.groups = state.groups.filter((g) => g.id !== source.id);
 
-    const shift = layoutGroup(target);
-    target.x += shift.minX;
-    target.y += shift.minY;
-
+    normalizeGroupPieces(target);
+    placeGroupOnGrid(target, target.gridCol, target.gridRow);
     target.zIndex = Math.max(target.zIndex, source.zIndex) + 1;
     renderGroup(target);
 
     target.el.classList.add('snapping');
-    setTimeout(() => target.el.classList.remove('snapping'), 220);
+    setTimeout(() => target.el && target.el.classList.remove('snapping'), 200);
   }
 
   function updateConnections() {
@@ -393,18 +442,18 @@
         for (let j = i + 1; j < group.pieces.length; j++) {
           const a = group.pieces[i];
           const b = group.pieces[j];
-          if (!areNeighbors(a, b)) continue;
+          if (!areSolveNeighbors(a, b)) continue;
 
-          const wa = { x: a.localX, y: a.localY };
-          const wb = { x: b.localX, y: b.localY };
-          const off = solvedOffset(a, b);
-          const tol = 4;
+          const dr = a.relRow - b.relRow;
+          const dc = a.relCol - b.relCol;
+          const sdr = a.row - b.row;
+          const sdc = a.col - b.col;
 
-          if (Math.abs((wa.x - wb.x) - off.dx) < tol && Math.abs((wa.y - wb.y) - off.dy) < tol) {
-            if (a.col === b.col && a.row === b.row - 1) { a.connBottom = true; b.connTop = true; }
-            if (a.col === b.col && a.row === b.row + 1) { a.connTop = true; b.connBottom = true; }
-            if (a.row === b.row && a.col === b.col - 1) { a.connRight = true; b.connLeft = true; }
-            if (a.row === b.row && a.col === b.col + 1) { a.connLeft = true; b.connRight = true; }
+          if (dr === sdr && dc === sdc) {
+            if (a.row === b.row - 1) { a.connBottom = true; b.connTop = true; }
+            if (a.row === b.row + 1) { a.connTop = true; b.connBottom = true; }
+            if (a.col === b.col - 1) { a.connRight = true; b.connLeft = true; }
+            if (a.col === b.col + 1) { a.connLeft = true; b.connRight = true; }
           }
         }
       }
@@ -423,19 +472,41 @@
     if (state.groups.length !== 1) return;
     const group = state.groups[0];
     if (group.pieces.length !== state.rows * state.cols) return;
+    if (group.gridCol !== 0 || group.gridRow !== 0) return;
 
     const ref = group.pieces[0];
     for (const p of group.pieces) {
-      const expectedDx = (p.col - ref.col) * state.pieceW;
-      const expectedDy = (p.row - ref.row) * state.pieceH;
-      const actualDx = p.localX - ref.localX;
-      const actualDy = p.localY - ref.localY;
-      if (Math.abs(actualDx - expectedDx) > 6 || Math.abs(actualDy - expectedDy) > 6) {
-        return;
-      }
+      const expectedRelCol = p.col - ref.col;
+      const expectedRelRow = p.row - ref.row;
+      if (p.relCol !== expectedRelCol || p.relRow !== expectedRelRow) return;
     }
 
     onWin();
+  }
+
+  function pixelToGrid(x, y, group) {
+    let minRelC = 0;
+    let minRelR = 0;
+    const anchorX = x - minRelC * state.cellW;
+    const anchorY = y - minRelR * state.cellH;
+    let col = Math.round(anchorX / state.cellW - 0.5 * (getGroupWidth(group) - 1));
+    let row = Math.round(anchorY / state.cellH - 0.5 * (getGroupHeight(group) - 1));
+
+    col = Math.max(0, Math.min(col, state.cols - getGroupWidth(group)));
+    row = Math.max(0, Math.min(row, state.rows - getGroupHeight(group)));
+    return { col, row };
+  }
+
+  function getGroupWidth(group) {
+    let max = 0;
+    group.pieces.forEach((p) => { max = Math.max(max, p.relCol + 1); });
+    return max;
+  }
+
+  function getGroupHeight(group) {
+    let max = 0;
+    group.pieces.forEach((p) => { max = Math.max(max, p.relRow + 1); });
+    return max;
   }
 
   function onPointerDown(e) {
@@ -455,9 +526,13 @@
     state.drag = {
       group,
       pointerId: e.pointerId,
-      offsetX: e.clientX - boardRect.left - group.x,
-      offsetY: e.clientY - boardRect.top - group.y,
+      originCol: group.gridCol,
+      originRow: group.gridRow,
+      offsetX: e.clientX - boardRect.left - group.gridCol * state.cellW,
+      offsetY: e.clientY - boardRect.top - group.gridRow * state.cellH,
     };
+
+    clearGroupFromGrid(group);
     e.preventDefault();
   }
 
@@ -466,30 +541,38 @@
 
     const boardRect = boardEl.getBoundingClientRect();
     const group = state.drag.group;
-    let maxX = 0;
-    let maxY = 0;
-    group.pieces.forEach((p) => {
-      maxX = Math.max(maxX, p.localX + p.width);
-      maxY = Math.max(maxY, p.localY + p.height);
-    });
+    const px = e.clientX - boardRect.left - state.drag.offsetX;
+    const py = e.clientY - boardRect.top - state.drag.offsetY;
+    const snapped = pixelToGrid(px, py, group);
 
-    let nx = e.clientX - boardRect.left - state.drag.offsetX;
-    let ny = e.clientY - boardRect.top - state.drag.offsetY;
-    nx = Math.max(0, Math.min(nx, state.boardW - maxX));
-    ny = Math.max(0, Math.min(ny, state.boardH - maxY));
+    group.gridCol = snapped.col;
+    group.gridRow = snapped.row;
+    group.el.style.left = snapped.col * state.cellW + 'px';
+    group.el.style.top = snapped.row * state.cellH + 'px';
 
-    group.x = nx;
-    group.y = ny;
-    group.el.style.left = nx + 'px';
-    group.el.style.top = ny + 'px';
+    const valid = canPlaceGroup(group, snapped.col, snapped.row, group.id);
+    group.el.classList.toggle('invalid', !valid);
   }
 
   function onPointerUp(e) {
     if (!state.drag || state.drag.pointerId !== e.pointerId) return;
 
-    state.drag.group.el.classList.remove('dragging');
+    const group = state.drag.group;
+    group.el.classList.remove('dragging', 'invalid');
+
+    const col = group.gridCol;
+    const row = group.gridRow;
+
+    if (canPlaceGroup(group, col, row, group.id)) {
+      placeGroupOnGrid(group, col, row);
+      renderGroup(group);
+      tryMergeAll();
+    } else {
+      placeGroupOnGrid(group, state.drag.originCol, state.drag.originRow);
+      renderGroup(group);
+    }
+
     state.drag = null;
-    trySnap();
   }
 
   function startTimer() {
