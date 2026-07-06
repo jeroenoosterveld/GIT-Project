@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { Difficulty, DIFFICULTY_CONFIG, GRID_COLUMNS } from '../constants/cards';
+import { GAME_CARDS, GAME_PAIRS, GRID_COLUMNS, GRID_LABEL, GRID_ROWS } from '../constants/cards';
 
 type GameHeaderProps = {
   moves: number;
@@ -8,19 +8,9 @@ type GameHeaderProps = {
   matchedPairs: number;
   totalPairs: number;
   cardCount: number;
-  difficulty: Difficulty;
   usingCustomPhotos: boolean;
   onRestart: () => void;
 };
-
-function getGridLabel(difficulty: Difficulty, cardCount: number) {
-  const config = DIFFICULTY_CONFIG[difficulty];
-  if (difficulty === 'medium' && cardCount === 24) {
-    return `Bord ${config.grid} — 24 kaarten (12 paren)`;
-  }
-  const rows = Math.ceil(cardCount / GRID_COLUMNS);
-  return `Bord ${GRID_COLUMNS}×${rows} — ${cardCount} kaarten`;
-}
 
 function formatTime(totalSeconds: number) {
   const minutes = Math.floor(totalSeconds / 60)
@@ -36,10 +26,11 @@ export function GameHeader({
   matchedPairs,
   totalPairs,
   cardCount,
-  difficulty,
   usingCustomPhotos,
   onRestart,
 }: GameHeaderProps) {
+  const gridOk = cardCount === GAME_CARDS;
+
   return (
     <View style={styles.container}>
       <View>
@@ -47,7 +38,11 @@ export function GameHeader({
         <Text style={styles.subtitle}>
           {usingCustomPhotos ? 'Met jouw foto\'s — volledig offline' : 'Vind alle paartjes — volledig offline'}
         </Text>
-        <Text style={styles.gridLabel}>{getGridLabel(difficulty, cardCount)}</Text>
+        <Text style={[styles.gridLabel, !gridOk && styles.gridLabelWarning]}>
+          {gridOk
+            ? `Bord ${GRID_LABEL} — ${GAME_CARDS} kaarten (${GAME_PAIRS} paren)`
+            : `Let op: ${cardCount} kaarten — verwacht ${GAME_CARDS} (${GRID_COLUMNS}×${GRID_ROWS})`}
+        </Text>
       </View>
 
       <View style={styles.statsRow}>
@@ -91,9 +86,12 @@ const styles = StyleSheet.create({
   },
   gridLabel: {
     marginTop: 6,
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: 15,
+    fontWeight: '800',
     color: '#ffffff',
+  },
+  gridLabelWarning: {
+    color: '#ffd27d',
   },
   statsRow: {
     flexDirection: 'row',

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { CardTheme, Difficulty, DIFFICULTY_CONFIG } from '../constants/cards';
+import { CardTheme, GAME_PAIRS } from '../constants/cards';
 import { expandThemesToPairCount } from '../utils/cardThemes';
 
 export type GameCard = {
@@ -18,9 +18,8 @@ function shuffle<T>(items: T[]): T[] {
   return copy;
 }
 
-function createDeck(difficulty: Difficulty, cardThemes: CardTheme[]): GameCard[] {
-  const { pairs } = DIFFICULTY_CONFIG[difficulty];
-  const selected = expandThemesToPairCount(cardThemes, pairs);
+function createDeck(cardThemes: CardTheme[]): GameCard[] {
+  const selected = expandThemesToPairCount(cardThemes, GAME_PAIRS);
 
   return shuffle(
     selected.flatMap((theme) => [
@@ -31,8 +30,7 @@ function createDeck(difficulty: Difficulty, cardThemes: CardTheme[]): GameCard[]
 }
 
 export function useMemoryGame(cardThemes: CardTheme[]) {
-  const [difficulty, setDifficulty] = useState<Difficulty>('medium');
-  const [cards, setCards] = useState<GameCard[]>(() => createDeck('medium', cardThemes));
+  const [cards, setCards] = useState<GameCard[]>(() => createDeck(cardThemes));
   const [flippedIds, setFlippedIds] = useState<string[]>([]);
   const [matchedIds, setMatchedIds] = useState<string[]>([]);
   const [moves, setMoves] = useState(0);
@@ -43,36 +41,31 @@ export function useMemoryGame(cardThemes: CardTheme[]) {
 
   cardThemesRef.current = cardThemes;
 
-  const totalPairs = DIFFICULTY_CONFIG[difficulty].pairs;
+  const totalPairs = GAME_PAIRS;
   const isComplete = matchedIds.length === cards.length && cards.length > 0;
 
-  const resetGame = useCallback((nextDifficulty: Difficulty = difficulty) => {
+  const resetGame = useCallback(() => {
     if (flipTimeout.current) {
       clearTimeout(flipTimeout.current);
       flipTimeout.current = null;
     }
 
-    setDifficulty(nextDifficulty);
-    setCards(createDeck(nextDifficulty, cardThemesRef.current));
+    setCards(createDeck(cardThemesRef.current));
     setFlippedIds([]);
     setMatchedIds([]);
     setMoves(0);
     setSeconds(0);
     setIsLocked(false);
-  }, [difficulty]);
-
-  const changeDifficulty = useCallback((nextDifficulty: Difficulty) => {
-    resetGame(nextDifficulty);
-  }, [resetGame]);
+  }, []);
 
   useEffect(() => {
-    setCards(createDeck(difficulty, cardThemesRef.current));
+    setCards(createDeck(cardThemesRef.current));
     setFlippedIds([]);
     setMatchedIds([]);
     setMoves(0);
     setSeconds(0);
     setIsLocked(false);
-  }, [cardThemes, difficulty]);
+  }, [cardThemes]);
 
   useEffect(() => {
     if (matchedIds.length > 0 || flippedIds.length > 0) {
@@ -143,13 +136,11 @@ export function useMemoryGame(cardThemes: CardTheme[]) {
 
   return {
     cards,
-    difficulty,
     flippedIds,
     matchedIds,
     isComplete,
     isLocked,
     stats,
-    changeDifficulty,
     flipCard,
     resetGame,
   };

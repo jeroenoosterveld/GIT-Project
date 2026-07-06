@@ -1,6 +1,6 @@
-import { Dimensions, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
 
-import { Difficulty, DIFFICULTY_CONFIG, GRID_COLUMNS } from '../constants/cards';
+import { GRID_COLUMNS } from '../constants/cards';
 import { GameCard } from '../hooks/useMemoryGame';
 import { MemoryCard } from './MemoryCard';
 
@@ -44,32 +44,6 @@ export function GameBoard({
   );
 }
 
-type DifficultyPickerProps = {
-  difficulty: Difficulty;
-  onChange: (difficulty: Difficulty) => void;
-};
-
-export function DifficultyPicker({ difficulty, onChange }: DifficultyPickerProps) {
-  return (
-    <View style={styles.difficultyRow}>
-      {(Object.keys(DIFFICULTY_CONFIG) as Difficulty[]).map((level) => {
-        const isActive = difficulty === level;
-        return (
-          <Pressable
-            key={level}
-            onPress={() => onChange(level)}
-            style={[styles.difficultyButton, isActive && styles.difficultyButtonActive]}
-          >
-            <Text style={[styles.difficultyText, isActive && styles.difficultyTextActive]}>
-              {DIFFICULTY_CONFIG[level].label} · {DIFFICULTY_CONFIG[level].grid}
-            </Text>
-          </Pressable>
-        );
-      })}
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   board: {
     flexDirection: 'row',
@@ -80,29 +54,5 @@ const styles = StyleSheet.create({
   },
   cardSlot: {
     minWidth: 0,
-  },
-  difficultyRow: {
-    flexDirection: 'row',
-    gap: 10,
-    justifyContent: 'center',
-  },
-  difficultyButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 999,
-    backgroundColor: 'rgba(255,255,255,0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.18)',
-  },
-  difficultyButtonActive: {
-    backgroundColor: '#ffffff',
-  },
-  difficultyText: {
-    color: '#dbe4ff',
-    fontWeight: '600',
-    fontSize: 14,
-  },
-  difficultyTextActive: {
-    color: '#2f3f9f',
   },
 });

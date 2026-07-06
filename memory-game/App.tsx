@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-import { DifficultyPicker, GameBoard } from './src/components/GameBoard';
+import { GameBoard } from './src/components/GameBoard';
 import { GameHeader } from './src/components/GameHeader';
 import { PhotoPickerButton } from './src/components/PhotoPickerButton';
 import { UpdateBanner } from './src/components/UpdateBanner';
@@ -26,13 +26,11 @@ export default function App() {
 
   const {
     cards,
-    difficulty,
     flippedIds,
     matchedIds,
     isComplete,
     isLocked,
     stats,
-    changeDifficulty,
     flipCard,
     resetGame,
   } = useMemoryGame(cardThemes);
@@ -122,7 +120,6 @@ export default function App() {
           matchedPairs={stats.matchedPairs}
           totalPairs={stats.totalPairs}
           cardCount={cards.length}
-          difficulty={difficulty}
           usingCustomPhotos={usingCustomPhotos}
           onRestart={() => resetGame()}
         />
@@ -138,9 +135,7 @@ export default function App() {
           />
         ) : null}
 
-        <Text style={styles.versionLabel}>Versie: {BUILD_VERSION}</Text>
-
-        <DifficultyPicker difficulty={difficulty} onChange={changeDifficulty} />
+        <Text style={styles.versionLabel}>Versie: {BUILD_VERSION} · 4×6 · 24 kaarten</Text>
 
         <GameBoard
           cards={cards}

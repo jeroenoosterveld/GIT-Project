@@ -8,6 +8,9 @@ export type CardTheme = {
 export const MIN_PHOTOS_REQUIRED = 5;
 export const GRID_COLUMNS = 4;
 export const GRID_ROWS = 6;
+export const GAME_PAIRS = 12;
+export const GAME_CARDS = GAME_PAIRS * 2;
+export const GRID_LABEL = '4×6';
 
 export const DEFAULT_CARD_THEMES: CardTheme[] = [
   { id: 'dog', image: require('../../assets/cards/dog.png') },
@@ -26,13 +29,3 @@ export const DEFAULT_CARD_THEMES: CardTheme[] = [
 
 /** @deprecated use DEFAULT_CARD_THEMES */
 export const CARD_THEMES = DEFAULT_CARD_THEMES;
-
-export type Difficulty = 'easy' | 'medium';
-
-export const DIFFICULTY_CONFIG: Record<
-  Difficulty,
-  { label: string; pairs: number; grid: string }
-> = {
-  easy: { label: 'Makkelijk', pairs: 6, grid: '4×3' },
-  medium: { label: 'Normaal', pairs: 12, grid: '4×6' },
-};
