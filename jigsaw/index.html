@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Jigsaw Blokken">
+  <meta name="theme-color" content="#0f172a">
+  <title>Jigsaw Blokken</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <section id="setup-screen" class="screen active">
+      <header class="header">
+        <h1>Jigsaw Blokken</h1>
+        <p class="subtitle">Schuif stukjes, verbind ze en maak de foto compleet</p>
+      </header>
+
+      <div class="setup-content">
+        <label class="photo-picker">
+          <input type="file" id="photo-input" accept="image/*" hidden>
+          <div class="photo-preview" id="photo-preview">
+            <span class="photo-placeholder">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <path d="M21 15l-5-5L5 21"/>
+              </svg>
+              <span>Kies een foto</span>
+            </span>
+            <img id="preview-img" alt="Gekozen foto" hidden>
+          </div>
+        </label>
+
+        <div class="size-selector">
+          <label>Aantal stukjes</label>
+          <div class="size-options" id="size-options">
+            <button type="button" class="size-btn" data-cols="3" data-rows="3">3×3</button>
+            <button type="button" class="size-btn active" data-cols="4" data-rows="4">4×4</button>
+            <button type="button" class="size-btn" data-cols="5" data-rows="5">5×5</button>
+            <button type="button" class="size-btn" data-cols="6" data-rows="4">6×4</button>
+          </div>
+          <p class="size-hint" id="size-hint">16 stukjes</p>
+        </div>
+
+        <button type="button" class="btn btn-primary" id="start-btn" disabled>Start puzzel</button>
+        <a class="link-secondary" href="../puzzel/">← Schuifpuzzel</a>
+      </div>
+    </section>
+
+    <section id="game-screen" class="screen">
+      <header class="game-header">
+        <button type="button" class="btn-icon" id="back-btn" aria-label="Terug">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </button>
+        <div class="game-info">
+          <span id="group-count">0 verbonden</span>
+          <span id="timer">0:00</span>
+        </div>
+        <button type="button" class="btn-icon" id="shuffle-btn" aria-label="Schudden">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>
+          </svg>
+        </button>
+      </header>
+
+      <div class="board-wrap">
+        <div id="board" class="board"></div>
+      </div>
+
+      <p class="game-hint">Sleep stukjes en klik ze aan elkaar. Verbonden blokken bewegen samen.</p>
+    </section>
+
+    <div id="win-overlay" class="overlay" hidden>
+      <div class="win-card">
+        <div class="win-emoji">🧩</div>
+        <h2>Foto compleet!</h2>
+        <p id="win-stats"></p>
+        <button type="button" class="btn btn-primary" id="play-again-btn">Nog een keer</button>
+        <button type="button" class="btn btn-secondary" id="new-photo-btn">Nieuwe foto</button>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="slice-canvas" hidden></canvas>
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+  </script>
+</body>
+</html>

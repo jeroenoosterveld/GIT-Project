@@ -2,12 +2,44 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url=./puzzel/">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Foto Puzzel</title>
-  <script>location.replace('./puzzel/');</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#1a1a2e">
+  <title>Foto Puzzels</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #1a1a2e;
+      color: #eaeaea;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    main { max-width: 360px; width: 100%; text-align: center; }
+    h1 { font-size: 1.8rem; margin-bottom: 8px; }
+    p { color: #8892a4; margin-bottom: 28px; }
+    a {
+      display: block;
+      padding: 18px 20px;
+      margin-bottom: 12px;
+      border-radius: 14px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.05rem;
+    }
+    .slide { background: #e94560; color: #fff; }
+    .jigsaw { background: #38bdf8; color: #0f172a; }
+  </style>
 </head>
 <body>
-  <p>Doorverwijzen naar <a href="./puzzel/">Foto Puzzel</a>...</p>
+  <main>
+    <h1>Foto Puzzels</h1>
+    <p>Kies een puzzel en gebruik je eigen foto's</p>
+    <a class="slide" href="./puzzel/">Schuifpuzzel</a>
+    <a class="jigsaw" href="./jigsaw/">Jigsaw Blokken</a>
+  </main>
 </body>
 </html>
