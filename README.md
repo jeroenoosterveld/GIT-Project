@@ -1,12 +1,22 @@
-# Foto Puzzel
+# Foto Puzzels
 
-Een offline schuifpuzzel-app voor iPhone Safari. Kies een foto uit je bibliotheek, bepaal het aantal stukjes, en los de puzzel op door te schuiven.
+Offline puzzel-apps voor iPhone Safari met je eigen foto's.
 
-## Live app (permanent)
+## Live apps (permanent)
 
-**https://jeroenoosterveld.github.io/Memory-game/puzzel/**
+| App | Link |
+|-----|------|
+| Menu | **https://jeroenoosterveld.github.io/Memory-game/** |
+| Schuifpuzzel | https://jeroenoosterveld.github.io/Memory-game/puzzel/ |
+| Jigsaw Blokken | https://jeroenoosterveld.github.io/Memory-game/jigsaw/ |
 
-De app wordt automatisch gepubliceerd via GitHub Pages bij elke wijziging op `master`.
+## Schuifpuzzel
+
+Een klassieke schuifpuzzel: kies een foto, bepaal het aantal stukjes, en schuif ze op hun plek.
+
+## Jigsaw Blokken
+
+Geïnspireerd op Jigsaw Block Sort: sleep foto-stukjes, klik ze aan elkaar en vorm verbonden blokken tot de foto compleet is.
 
 ## Functies
 
